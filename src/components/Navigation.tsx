@@ -28,7 +28,7 @@ export function Navigation() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Left side - Navigation links */}
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-4 md:space-x-8 overflow-x-auto">
             {navLinks.map(({ href, label }) => {
               const isActive = pathname === href || pathname.startsWith(`${href}/`);
 
@@ -53,11 +53,11 @@ export function Navigation() {
           </div>
 
           {/* Right side - Additional actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center ml-4 md:ml-0">
             <Link
               href="/trips"
               key="start-planning"
-              className="text-base font-medium text-foreground hover:text-primary transition-colors duration-200 group relative"
+              className="text-base whitespace-nowrap font-medium text-foreground hover:text-primary transition-colors duration-200 group relative"
             >
               Start Planning
               <span className="absolute -bottom-[19px] left-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />

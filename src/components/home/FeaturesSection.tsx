@@ -1,164 +1,211 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Calendar, Globe, DollarSign, Map, CheckSquare, Clock } from "lucide-react";
-
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Calendar, DollarSign, Map, Clock, Bell, CheckSquare } from "lucide-react";
 import Link from "next/link";
-
+import { useRef } from "react";
+import { FeaturesSceneComponent } from "~/app/examples/3d/components/FeaturesSceneComponent";
 import { Text } from "~/components/ui/Text";
 
-type Feature = {
-  href: string;
+interface Feature {
   title: string;
   description: string;
   icon: React.ElementType;
-  features: readonly string[];
-  badges: readonly string[];
-  theme: string;
-};
+  details: {
+    title: string;
+    description: string;
+  }[];
+}
 
 const features: Feature[] = [
   {
-    href: "/trips",
-    title: "Trip Planning",
-    description:
-      "Create detailed trip plans with timelines, activities, and checklists. Keep everything organized in one place.",
+    title: "Timeline & Activities",
+    description: "Visual planning tools for organizing your perfect trip",
     icon: Calendar,
-    features: [
-      "Timeline management",
-      "Activity planning",
-      "Custom checklists",
-      "Travel documents",
-    ],
-    badges: ["Easy to Use", "Customizable"],
-    theme: "blue",
+    details: [
+      {
+        title: "Visual Timeline",
+        description: "Interactive timeline view of your entire trip"
+      },
+      {
+        title: "Activity Planning",
+        description: "Drag & drop interface for organizing activities"
+      },
+      {
+        title: "Smart Reminders",
+        description: "Automated notifications for upcoming events"
+      }
+    ]
   },
   {
-    href: "/trips",
-    title: "Budget Tracking",
-    description:
-      "Track your travel expenses, set budgets, and monitor spending. Stay on top of your finances throughout your journey.",
+    title: "Budget Management",
+    description: "Track expenses and manage your travel budget",
     icon: DollarSign,
-    features: [
-      "Expense tracking",
-      "Budget planning",
-      "Cost analysis",
-      "Currency conversion",
-    ],
-    badges: ["Real-time", "Detailed Reports"],
-    theme: "green",
+    details: [
+      {
+        title: "Real-time Tracking",
+        description: "Monitor expenses as you travel"
+      },
+      {
+        title: "Budget Analytics",
+        description: "Visual breakdowns of your spending"
+      },
+      {
+        title: "Cost Forecasting",
+        description: "Predict expenses for better planning"
+      }
+    ]
   },
   {
-    href: "/trips",
-    title: "Relocation Tools",
-    description:
-      "Specialized tools for managing international moves. Track shipping, housing, and essential tasks.",
-    icon: Globe,
-    features: [
-      "Moving checklists",
-      "Task management",
-      "Progress tracking",
-      "Document storage",
-    ],
-    badges: ["International", "Comprehensive"],
-    theme: "purple",
-  },
+    title: "Travel Tools",
+    description: "Essential tools for seamless trip organization",
+    icon: Map,
+    details: [
+      {
+        title: "Checklists",
+        description: "Custom lists for every travel need"
+      },
+      {
+        title: "Progress Tracking",
+        description: "Monitor your trip preparation status"
+      },
+      {
+        title: "Document Storage",
+        description: "Keep all travel documents organized"
+      }
+    ]
+  }
 ];
 
-const themeColors = {
-  blue: {
-    bg: "bg-blue-500/5",
-    hoverBg: "hover:bg-blue-500/10",
-    border: "border-blue-500/20",
-    text: "text-blue-500",
-    icon: "text-blue-500",
-    badge: "bg-blue-500/10 text-blue-400",
-    hover: "group-hover:text-blue-400",
-  },
-  green: {
-    bg: "bg-emerald-500/5",
-    hoverBg: "hover:bg-emerald-500/10",
-    border: "border-emerald-500/20",
-    text: "text-emerald-500",
-    icon: "text-emerald-500",
-    badge: "bg-emerald-500/10 text-emerald-400",
-    hover: "group-hover:text-emerald-400",
-  },
-  purple: {
-    bg: "bg-purple-500/5",
-    hoverBg: "hover:bg-purple-500/10",
-    border: "border-purple-500/20",
-    text: "text-purple-500",
-    icon: "text-purple-500",
-    badge: "bg-purple-500/10 text-purple-400",
-    hover: "group-hover:text-purple-400",
-  },
-};
+function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"]
+  });
 
-function FeatureCard({ feature }: { feature: Feature }) {
-  const colors = themeColors[feature.theme as keyof typeof themeColors];
+  const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   return (
-    <Link href={feature.href} className="block h-full">
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        className={`group relative h-full rounded-xl border-2 ${colors.border} bg-card/95 backdrop-blur-sm shadow-lg transition-all duration-200 ${colors.hoverBg}`}
-      >
-        <div className="p-6 md:p-8">
+    <motion.div
+      ref={cardRef}
+      style={{ y, opacity }}
+      className="relative w-full"
+    >
+      <div className="group relative h-full overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(28,85%,35%)]/5 via-transparent to-[hsl(35,85%,45%)]/5 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.03)_0px,rgba(255,255,255,0.03)_1px,transparent_1px,transparent_8px)]" />
+        
+        {/* Content */}
+        <div className="relative p-8 md:p-10">
           <div className="mb-8 flex items-center gap-4">
-            <div className={`rounded-xl p-4 ${colors.bg}`}>
-              <feature.icon className={`h-7 w-7 ${colors.icon}`} />
+            <div className="p-4 rounded-xl bg-[hsl(28,85%,35%)]/10 group-hover:bg-[hsl(28,85%,35%)]/20 transition-colors">
+              <feature.icon className="h-7 w-7 text-[hsl(28,85%,35%)]" />
             </div>
-            <Text variant="h3" className={`text-2xl font-semibold ${colors.text}`}>
+            <Text variant="h3" className="text-2xl font-semibold bg-gradient-to-r from-[hsl(28,85%,35%)] to-[hsl(35,85%,45%)] bg-clip-text text-transparent">
               {feature.title}
             </Text>
           </div>
 
-          <Text className="mb-8 text-base text-foreground-secondary">{feature.description}</Text>
+          <Text className="mb-8 text-lg text-foreground/80">
+            {feature.description}
+          </Text>
 
-          <div className="mb-8 flex flex-wrap gap-2">
-            {feature.badges.map((badge, i) => (
-              <span
+          <div className="space-y-6">
+            {feature.details.map((detail, i) => (
+              <motion.div
                 key={i}
-                className={`rounded-full px-3 py-1 text-sm font-medium ${colors.badge}`}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="group/item"
               >
-                {badge}
-              </span>
-            ))}
-          </div>
-
-          <div className="space-y-3">
-            {feature.features.map((feat, i) => (
-              <div key={i} className="flex items-center gap-3 text-base">
-                <span className={`h-1.5 w-1.5 rounded-full ${colors.text}`} />
-                <span className={`text-foreground-secondary ${colors.hover}`}>{feat}</span>
-              </div>
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg bg-[hsl(28,85%,35%)]/5 group-hover/item:bg-[hsl(28,85%,35%)]/10 transition-colors">
+                    {i === 0 ? <Clock className="w-5 h-5 text-[hsl(28,85%,35%)]" /> :
+                     i === 1 ? <Bell className="w-5 h-5 text-[hsl(28,85%,35%)]" /> :
+                     <CheckSquare className="w-5 h-5 text-[hsl(28,85%,35%)]" />}
+                  </div>
+                  <div>
+                    <Text className="font-medium text-foreground/90 mb-1">
+                      {detail.title}
+                    </Text>
+                    <Text className="text-foreground/70 group-hover/item:text-foreground/80 transition-colors">
+                      {detail.description}
+                    </Text>
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </motion.div>
-    </Link>
+      </div>
+    </motion.div>
   );
 }
 
 export function FeaturesSection() {
-  return (
-    <section className="relative overflow-hidden">
-      <div className="space-y-12 py-16 w-full mx-auto">
-        <div className="space-y-4 flex flex-col pb-12">
-          <h1
-            className="text-4xl md:text-5xl xl:text-6xl font-bold leading-tight tracking-tight font-bold bg-gradient-to-r from-[hsl(28,85%,35%)] to-[hsl(35,85%,45%)] bg-clip-text text-transparent"
-          >
-            Plan with Confidence
-          </h1>
-          <Text variant="body-lg" color="secondary" className="text-lg leading-relaxed">
-            Everything you need to plan your perfect trip or relocation
-          </Text>
-        </div>
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 transition-transform duration-300 mx-2">
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const scale = useTransform(scrollYProgress, [0, 0.2], [0.8, 1]);
+
+  return (
+    <section 
+      className="relative overflow-hidden min-h-screen" 
+      ref={containerRef}
+      style={{ perspective: '1000px' }}
+    >
+      {/* 3D Scene Background */}
+      <FeaturesSceneComponent className="opacity-30" />
+
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/70 to-background/90 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_20%,rgba(0,0,0,0.03)_120%)]" />
+      <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.01)_0px,rgba(255,255,255,0.01)_1px,transparent_1px,transparent_12px)]" />
+
+      <div className="relative space-y-24 w-full mx-auto px-6 md:px-8 lg:px-10 max-w-7xl py-24">
+        <motion.div 
+          style={{ opacity, scale }}
+          className="space-y-6 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="text-4xl md:text-5xl xl:text-6xl font-bold leading-tight tracking-tight bg-gradient-to-r from-[hsl(28,85%,35%)] to-[hsl(35,85%,45%)] bg-clip-text text-transparent [text-wrap:balance]">
+            Travel Planning Tools
+          </h1>
+          <Text variant="body-lg" className="text-lg sm:text-xl text-foreground/80 max-w-3xl mx-auto">
+            Everything you need to organize trips, manage budgets, and track travel plans in one place
+          </Text>
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 relative">
+          {/* Hover Effect Layer */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           {features.map((feature, index) => (
-            <FeatureCard key={`${feature.href}-${feature.title}`} feature={feature} />
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ 
+                duration: 0.5,
+                delay: index * 0.1
+              }}
+            >
+              <FeatureCard 
+                feature={feature} 
+                index={index} 
+              />
+            </motion.div>
           ))}
         </div>
       </div>

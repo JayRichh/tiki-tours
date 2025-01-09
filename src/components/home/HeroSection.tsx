@@ -19,42 +19,45 @@ export function HeroSection({ opacity, scale, y }: HeroSectionProps) {
       style={{ opacity, scale, y }}
       initial={{ opacity: 1, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col min-h-[80vh] justify-center overflow-hidden"
+      className="flex flex-col min-h-[100vh] justify-center overflow-hidden"
     >
       {/* Hero Content */}
       <div className="relative flex flex-col items-center">
 
         {/* Text Content */}
-        <div className="relative text-center max-w-4xl mx-auto px-4">
+        <div className="relative text-center max-w-6xl mx-auto px-4">
        
-          <div className="relative w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] md:w-[800px] md:h-[800px] mx-auto">
-            <Image
-              src="/tikihero.png"
-              alt="Tiki Hero"
-              fill
-              className="object-contain"
-              priority
-            />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pb-12 w-full text-center">
+          <div className="flex flex-col sm:block">
+            <div className="relative w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] md:w-[900px] md:h-[900px] mx-auto">
+              <Image
+                src="/tikihero.png"
+                alt="Tiki Hero"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <div className="w-full text-center sm:absolute sm:bottom-0 sm:left-1/2 sm:-translate-x-1/2 sm:pb-16">
               <Text
-                  variant="h4"
-                  color="secondary"
-                  className="text-xl sm:text-2xl max-w-2xl mx-auto leading-relaxed text-center pb-6"
-                >
-                  Adventure Planner
-                </Text>
+                variant="h4"
+                color="secondary"
+                className="text-lg sm:text-2xl max-w-2xl mx-auto leading-relaxed text-center pb-2"
+              >
+                Adventure Planner
+              </Text>
 
               <Text
                 variant="body-lg"
                 color="secondary"
-                className="text-xl sm:text-2xl max-w-3xl mx-auto leading-relaxed text-center"
+                className="text-base sm:text-xl md:text-2xl max-w-3xl mx-auto leading-snug sm:leading-relaxed text-center px-4"
               >
-                Plan your trips, relocations, and adventures with ease.<br></br> Track budgets, manage timelines, and
-                organize your journey all in one place.
+                Plan your trips, relocations, and adventures with ease.
+                <br className="hidden sm:block" />
+                Track budgets, manage timelines, and organize your journey all in one place.
               </Text>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 w-full max-w-full px-4 sm:px-0 mt-8">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 w-full max-w-full px-4 sm:px-0 mt-6 sm:mt-8">
                 <Link href="/trips" className="w-full sm:w-auto">
                   <motion.button
                     whileHover={{ scale: 1.03 }}
@@ -103,7 +106,7 @@ export function HeroSection({ opacity, scale, y }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 0.9, y: 0 }}
           transition={{ delay: 1, duration: 1 }}
-          className="flex flex-col items-center gap-2 mt-24"
+          className="flex flex-col items-center gap-2 mt-12 sm:mt-24"
         >
           <motion.div
             animate={{ y: [0, 5, 0] }}

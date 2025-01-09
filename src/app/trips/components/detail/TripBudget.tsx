@@ -37,9 +37,36 @@ export function TripBudget({ trip }: TripBudgetProps) {
 
   // Calculate daily spending trend
   const spendingTrend = useMemo(() => {
+    if (!trip.activities?.length) {
+      // Return default data point if no activities
+      const today = new Date().toISOString().split("T")[0];
+      return [{
+        id: "cumulative-spending",
+        data: [{x: today, y: 0}]
+      }];
+    }
+
     const dailySpending = new Map<string, number>();
     
-    trip.activities?.forEach((activity) => {
+    // Sort activities by date first
+    const sortedActivities = [...trip.activities].sort((a, b) => 
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Get start and end dates
+    const startDate = new Date(sortedActivities[0].date);
+    const endDate = new Date(sortedActivities[sortedActivities.length - 1].date);
+
+    // Fill in all dates between start and end
+    const allDates = [];
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      allDates.push(currentDate.toISOString().split("T")[0]);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Calculate spending for each date
+    sortedActivities.forEach((activity) => {
       const date = new Date(activity.date).toISOString().split("T")[0];
       dailySpending.set(
         date,
@@ -47,12 +74,11 @@ export function TripBudget({ trip }: TripBudgetProps) {
       );
     });
 
-    const sortedDates = Array.from(dailySpending.keys()).sort();
+    // Calculate cumulative spending for all dates
     let runningTotal = 0;
-
     return [{
       id: "cumulative-spending",
-      data: sortedDates.map(date => {
+      data: allDates.map(date => {
         runningTotal += dailySpending.get(date) || 0;
         return {
           x: date,
@@ -100,7 +126,7 @@ export function TripBudget({ trip }: TripBudgetProps) {
             <Text variant="body-sm" color="secondary" className="mb-4">
               Spending by Category
             </Text>
-            <div className="h-[200px] w-full">
+            <div className="h-[300px] w-full">
               <ResponsiveTreeMap
                 data={categoryData}
                 identity="name"
@@ -133,7 +159,7 @@ export function TripBudget({ trip }: TripBudgetProps) {
             <div className="h-[200px] w-full">
               <ResponsiveLine
                 data={spendingTrend}
-                margin={{ top: 20, right: 20, bottom: 50, left: 60 }}
+                margin={{ top: 30, right: 30, bottom: 70, left: 80 }}
                 xScale={{
                   type: "time",
                   format: "%Y-%m-%d",
@@ -148,24 +174,56 @@ export function TripBudget({ trip }: TripBudgetProps) {
                 }}
                 axisLeft={{
                   format: (value) => `$${value.toLocaleString()}`,
+                  tickSize: 8,
+                  tickPadding: 8,
+                  tickRotation: 0,
+                  legend: "Amount Spent",
+                  legendOffset: -60,
+                  legendPosition: "middle"
                 }}
                 axisBottom={{
                   format: "%b %d",
+                  tickSize: 8,
+                  tickPadding: 8,
                   tickRotation: -45,
+                  legend: "Date",
+                  legendOffset: 60,
+                  legendPosition: "middle"
                 }}
-                enablePoints={false}
+                enablePoints={true}
+                pointSize={8}
+                pointColor="#ffffff"
+                pointBorderWidth={2}
+                pointBorderColor="#60a5fa"
                 enableArea={true}
                 areaOpacity={0.1}
                 useMesh={true}
+                enableSlices="x"
                 curve="monotoneX"
                 theme={{
                   axis: {
+                    legend: {
+                      text: {
+                        fontSize: 14,
+                        fontWeight: 600
+                      }
+                    },
                     ticks: {
                       text: {
-                        fontSize: 11,
+                        fontSize: 12,
+                        fontWeight: 500
                       },
                     },
                   },
+                  tooltip: {
+                    container: {
+                      background: '#ffffff',
+                      padding: '12px',
+                      borderRadius: '4px',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      fontSize: '14px'
+                    }
+                  }
                 }}
                 colors={["#60a5fa"]}
               />

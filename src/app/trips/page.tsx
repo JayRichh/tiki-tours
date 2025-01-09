@@ -78,7 +78,7 @@ export default function TripsPage() {
   }
 
   return (
-    <Container className="pt-20 w-full">
+    <Container className="w-full min-h-screen">
       <TripStats stats={stats} />
       
       <TripFilters

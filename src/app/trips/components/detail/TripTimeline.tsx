@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, ChangeEvent } from "react";
 import { Card, CardHeader, CardContent } from "~/components/ui/Card";
 import { Text } from "~/components/ui/Text";
 import { Badge } from "~/components/ui/Badge";
 import { Trip, Activity, KeyEvent } from "~/types/trips";
 import { Button } from "~/components/ui/Button";
 import { Modal } from "~/components/ui/Modal";
+import { Select } from "~/components/ui/Select";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { ResponsiveLine } from "@nivo/line";
 
@@ -105,18 +106,188 @@ export function TripTimeline({ trip }: TripTimelineProps) {
         <div className="grid grid-cols-1 gap-8 w-full">
           {/* Activity Calendar */}
           <div>
-            <div className="h-[200px]">
+            <div className="flex flex-col gap-6 mb-6">
+              <div className="flex items-center justify-between">
+                <Text variant="h4">Activity Calendar</Text>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const today = new Date().toISOString().split("T")[0];
+                        const calendarEl = document.querySelector(".calendar-container");
+                        if (calendarEl) {
+                          calendarEl.scrollIntoView({ behavior: "smooth" });
+                        }
+                      }}
+                    >
+                      Today
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const calendarEl = document.querySelector(".calendar-container");
+                        if (calendarEl) {
+                          calendarEl.scrollBy({ left: -400, behavior: "smooth" });
+                        }
+                      }}
+                    >
+                      ← Prev Month
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const calendarEl = document.querySelector(".calendar-container");
+                        if (calendarEl) {
+                          calendarEl.scrollBy({ left: 400, behavior: "smooth" });
+                        }
+                      }}
+                    >
+                      Next Month →
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Select
+                  value={new Date(trip.startDate).getMonth().toString()}
+                  onChange={(value: string) => {
+                    // TODO: Implement month change
+                    console.log("Selected month:", value);
+                  }}
+                  options={[
+                    "January", "February", "March", "April",
+                    "May", "June", "July", "August",
+                    "September", "October", "November", "December"
+                  ].map((month, index) => ({
+                    value: index.toString(),
+                    label: month
+                  }))}
+                />
+                <Select
+                  value={new Date(trip.startDate).getFullYear().toString()}
+                  onChange={(value: string) => {
+                    // TODO: Implement year change using value directly
+                    console.log("Selected year:", value);
+                  }}
+                  options={Array.from(
+                    { length: 3 },
+                    (_, i) => {
+                      const year = new Date(trip.startDate).getFullYear() + i;
+                      return {
+                        value: year.toString(),
+                        label: year.toString()
+                      };
+                    }
+                  )}
+                />
+                <div className="flex items-center gap-2 ml-auto">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const calendarEl = document.querySelector(".calendar-container") as HTMLElement;
+                      if (calendarEl) {
+                        const currentScale = parseFloat(calendarEl.style.transform?.match(/scale\((.*?)\)/)?.[1] || "1");
+                        calendarEl.style.transform = `scale(${Math.min(1.5, currentScale + 0.1)})`;
+                      }
+                    }}
+                  >
+                    Zoom In +
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const calendarEl = document.querySelector(".calendar-container") as HTMLElement;
+                      if (calendarEl) {
+                        const currentScale = parseFloat(calendarEl.style.transform?.match(/scale\((.*?)\)/)?.[1] || "1");
+                        calendarEl.style.transform = `scale(${Math.max(0.5, currentScale - 0.1)})`;
+                      }
+                    }}
+                  >
+                    Zoom Out -
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div className="calendar-container h-[700px] bg-background/50 rounded-lg p-8 overflow-x-auto origin-top">
+              <style jsx global>{`
+                .calendar-day {
+                  transition: transform 0.2s ease, z-index 0.2s ease;
+                  cursor: pointer;
+                }
+                .calendar-day:hover {
+                  transform: scale(1.1);
+                  z-index: 10;
+                }
+                .calendar-day[data-current="true"] {
+                  stroke: #2563eb;
+                  stroke-width: 2;
+                }
+              `}</style>
               <ResponsiveCalendar
                 data={calendarData}
                 from={trip.startDate.split("T")[0]}
                 to={trip.endDate.split("T")[0]}
-                emptyColor="#eeeeee"
-                colors={["#61cdbb", "#97e3d5", "#e8c1a0", "#f47560"]}
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-                yearSpacing={40}
+                emptyColor="#f3f4f6"
+                colors={["#93c5fd", "#60a5fa", "#3b82f6", "#2563eb"]}
+                margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
+                yearSpacing={100}
                 monthBorderColor="#ffffff"
                 dayBorderWidth={2}
                 dayBorderColor="#ffffff"
+                monthLegendOffset={24}
+                daySpacing={12}
+                monthSpacing={80}
+                legendFormat=">-.2"
+                theme={{
+                  labels: {
+                    text: {
+                      fontSize: 16,
+                      fontWeight: 600
+                    }
+                  },
+                  legends: {
+                    text: {
+                      fontSize: 14,
+                      fontWeight: 500
+                    }
+                  },
+                  tooltip: {
+                    container: {
+                      background: '#ffffff',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                      fontSize: '14px'
+                    }
+                  }
+                }}
+                legends={[
+                  {
+                    anchor: "bottom-right",
+                    direction: "row",
+                    translateY: 36,
+                    itemCount: 4,
+                    itemWidth: 100,
+                    itemHeight: 20,
+                    itemDirection: "left-to-right",
+                    itemTextColor: "#666",
+                    symbolSize: 20,
+                    effects: [
+                      {
+                        on: "hover",
+                        style: {
+                          itemTextColor: "#000"
+                        }
+                      }
+                    ]
+                  }
+                ]}
                 onClick={(day) => {
                   const activities = trip.activities?.filter(
                     activity => activity.date.split("T")[0] === day.day
@@ -145,10 +316,11 @@ export function TripTimeline({ trip }: TripTimelineProps) {
 
           {/* Activity Distribution */}
           <div>
-            <div className="h-[200px]">
+            <Text variant="h4" className="mb-4">Activity Distribution</Text>
+            <div className="h-[400px] bg-background/50 rounded-lg p-6">
               <ResponsiveLine
                 data={lineData}
-                margin={{ top: 20, right: 20, bottom: 30, left: 40 }}
+                margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
                 xScale={{
                   type: "time",
                   format: "%Y-%m-%d",
@@ -187,19 +359,51 @@ export function TripTimeline({ trip }: TripTimelineProps) {
                 useMesh={true}
                 legends={[
                   {
-                    anchor: "top",
-                    direction: "row",
+                    anchor: "right",
+                    direction: "column",
                     justify: false,
-                    translateX: 0,
-                    translateY: -20,
-                    itemsSpacing: 0,
+                    translateX: 100,
+                    translateY: 0,
+                    itemsSpacing: 10,
                     itemDirection: "left-to-right",
-                    itemWidth: 80,
-                    itemHeight: 20,
-                    symbolSize: 12,
-                    symbolShape: "circle"
+                    itemWidth: 100,
+                    itemHeight: 24,
+                    symbolSize: 16,
+                    symbolShape: "circle",
+                    itemTextColor: "#666",
+                    effects: [
+                      {
+                        on: "hover",
+                        style: {
+                          itemTextColor: "#000",
+                          itemBackground: "#f3f4f6"
+                        }
+                      }
+                    ]
                   }
                 ]}
+                theme={{
+                  axis: {
+                    legend: {
+                      text: {
+                        fontSize: 14,
+                        fontWeight: 600
+                      }
+                    },
+                    ticks: {
+                      text: {
+                        fontSize: 12,
+                        fontWeight: 500
+                      }
+                    }
+                  },
+                  legends: {
+                    text: {
+                      fontSize: 13,
+                      fontWeight: 500
+                    }
+                  }
+                }}
                 onClick={(point) => {
                   const activities = trip.activities?.filter(
                     activity => 

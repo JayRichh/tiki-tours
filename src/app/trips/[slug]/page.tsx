@@ -239,7 +239,7 @@ export default function TripDetailPage() {
 
   if (!trip) {
     return (
-      <Container size="full" className="pt-20 flex flex-col flex-1">
+      <Container size="full" className="min-h-screen flex flex-col flex-1">
         <Card>
           <div className="p-6">
             <Text>Trip not found</Text>
@@ -266,7 +266,7 @@ export default function TripDetailPage() {
   const tabs = getTabs(trip, tabContent);
 
   return (
-    <Container size="full" className="pt-20 flex flex-col flex-1">
+    <Container size="full" className="pb-8 flex flex-col flex-1">
       <div className="space-y-6 flex flex-col flex-1 max-w-[1400px] mx-auto">
         <TripBreadcrumb trip={trip} />
         <div className="min-h-[600px] w-full flex flex-col flex-1">

@@ -1,3 +1,5 @@
+// TripService.ts
+
 import { Trip, TripFilters, KeyEvent, Deadline } from "~/types/trips";
 import { slugify, generateUniqueSlug } from "~/utils/slugify";
 
@@ -5,59 +7,72 @@ class TripService {
   private static instance: TripService;
 
   private constructor() {
-    // Initialize with some test data if no trips exist
+    // Initialize with detailed dummy relocation data if no trips exist
     const trips = this.getTripsFromStorage();
     if (trips.length === 0) {
       console.log('No trips found, initializing with test data');
-      const nzRelocationTrip: Trip = {
+      const londonToVancouverRelocation: Trip = {
         id: crypto.randomUUID(),
-        slug: 'newcastle-to-auckland-relocation',
-        destination: 'Auckland, New Zealand',
-        startDate: '2024-09-01',
-        endDate: '2024-10-31',
+        slug: 'london-to-vancouver-relocation',
+        destination: 'Vancouver, Canada',
+        startDate: '2025-03-01',
+        endDate: '2026-02-28',
         status: 'relocating',
-        tripBudget: 4750,
+        tripBudget: 6000,
         activities: [],
-        spentSoFar: 0,
+        spentSoFar: 500,
         flexibleDates: true,
         relocationPlan: true,
         travelMode: 'flight',
         currency: 'GBP',
         tripPriority: 'high',
-        tripDetails: 'Relocation from Newcastle (UK) to Auckland (NZ)',
+        tripDetails: 'Relocating from London (UK) to Vancouver (Canada) for a new job opportunity.',
         keyEvents: [
           {
             id: crypto.randomUUID(),
-            title: 'Book Flight',
-            date: '2024-06-01',
-            description: 'Book Emirates flight NCL to AKL (£700-1000)',
+            title: 'Meet with Immigration Consultant',
+            date: '2024-08-01',
+            description: 'Discuss visa requirements and timelines.',
             priorityLevel: 'high'
           },
           {
             id: crypto.randomUUID(),
-            title: 'Arrange Shipping',
-            date: '2024-06-15',
-            description: 'Organize shipping of essential items (£600-1000)',
+            title: 'Book Flight',
+            date: '2025-01-10',
+            description: 'Book one-way flight from London to Vancouver (~£600-800).',
             priorityLevel: 'high'
+          },
+          {
+            id: crypto.randomUUID(),
+            title: 'Arrange Temporary Housing',
+            date: '2025-02-15',
+            description: 'Set up short-term rental in Vancouver for the first month.',
+            priorityLevel: 'medium'
           }
         ],
         deadlines: [
           {
             id: crypto.randomUUID(),
-            description: 'Confirm exact travel dates',
-            dueDate: '2024-05-01',
+            description: 'Finalize job contract',
+            dueDate: '2024-11-01',
             completed: false
           },
           {
             id: crypto.randomUUID(),
-            description: 'Book Emirates flight',
-            dueDate: '2024-06-01',
+            description: 'Obtain Canadian visa',
+            dueDate: '2025-01-01',
+            completed: false
+          },
+          {
+            id: crypto.randomUUID(),
+            description: 'Book one-way flight',
+            dueDate: '2025-01-15',
             completed: false
           },
           {
             id: crypto.randomUUID(),
             description: 'Arrange shipping service',
-            dueDate: '2024-06-15',
+            dueDate: '2025-02-01',
             completed: false
           }
         ],
@@ -69,21 +84,21 @@ class TripService {
             items: [
               {
                 id: crypto.randomUUID(),
-                title: 'Sort UK house/tenancy',
+                title: 'Cancel UK utility contracts',
                 completed: false,
                 priority: 'high'
               },
               {
                 id: crypto.randomUUID(),
-                title: 'Pack essential items for shipping',
+                title: 'Notify landlord or sell property',
                 completed: false,
                 priority: 'high'
               },
               {
                 id: crypto.randomUUID(),
-                title: 'Research job opportunities in Auckland',
+                title: 'Organize farewell gatherings',
                 completed: false,
-                priority: 'high'
+                priority: 'low'
               }
             ]
           },
@@ -94,31 +109,31 @@ class TripService {
             items: [
               {
                 id: crypto.randomUUID(),
-                title: 'Flight booking (£700-1000)',
+                title: 'Flight (~£600-800)',
                 completed: false,
                 priority: 'high'
               },
               {
                 id: crypto.randomUUID(),
-                title: 'Shipping costs (£600-1000)',
+                title: 'Shipping costs (~£500-800)',
                 completed: false,
                 priority: 'high'
               },
               {
                 id: crypto.randomUUID(),
-                title: 'Initial living costs (£600-750)',
+                title: 'Initial living costs (~£1000-1500)',
                 completed: false,
                 priority: 'medium'
               },
               {
                 id: crypto.randomUUID(),
-                title: 'Rental setup (£1200-1500)',
+                title: 'Rental setup (~£1200-1500)',
                 completed: false,
                 priority: 'high'
               },
               {
                 id: crypto.randomUUID(),
-                title: 'Miscellaneous setup (£350-500)',
+                title: 'Misc relocation expenses (~£400-600)',
                 completed: false,
                 priority: 'medium'
               }
@@ -126,14 +141,14 @@ class TripService {
           }
         ],
         notes: [
-          'Stay with family initially while job hunting',
-          'Monthly savings target: £310 from Feb to Aug',
-          'Total budget needed: ~£4750',
-          'Shipping: Consider PSS International, Seven Seas Worldwide, or Anglo Pacific'
+          'Target arrival in Vancouver around late February 2025.',
+          'Plan to stay in a short-term rental for the first month.',
+          'Discuss bridging loan options with the bank if needed.',
+          'Total budget needed: ~£6000 (with a contingency buffer).'
         ],
         lastUpdated: new Date().toISOString()
       };
-      this.saveTripsToStorage([nzRelocationTrip]);
+      this.saveTripsToStorage([londonToVancouverRelocation]);
     }
     this.migrateTrips();
   }
@@ -178,7 +193,12 @@ class TripService {
           if (filters.destination && !trip.destination.toLowerCase().includes(filters.destination.toLowerCase())) return false;
           if (filters.minBudget && trip.tripBudget < filters.minBudget) return false;
           if (filters.maxBudget && trip.tripBudget > filters.maxBudget) return false;
-          if (filters.holidayPreferences?.length && !filters.holidayPreferences.some(pref => trip.holidayPreferences?.includes(pref))) return false;
+          if (
+            filters.holidayPreferences?.length &&
+            !filters.holidayPreferences.some(pref => trip.holidayPreferences?.includes(pref))
+          ) {
+            return false;
+          }
           return true;
         });
       }
