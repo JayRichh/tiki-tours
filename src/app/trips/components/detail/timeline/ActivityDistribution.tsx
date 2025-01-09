@@ -97,8 +97,8 @@ export function ActivityDistribution({ trip, onPointClick }: ActivityDistributio
               bottom: chartDimensions.marginBottom, 
               left: chartDimensions.marginLeft 
             }}
-            width={chartDimensions.boundedWidth + chartDimensions.marginLeft + chartDimensions.marginRight}
-            height={chartDimensions.boundedHeight + chartDimensions.marginTop + chartDimensions.marginBottom}
+            lineWidth={chartDimensions.boundedWidth + chartDimensions.marginLeft + chartDimensions.marginRight}
+            // lineHeight={chartDimensions.boundedHeight + chartDimensions.marginTop + chartDimensions.marginBottom}
             xScale={{
               type: "time",
               format: "%Y-%m-%d",
