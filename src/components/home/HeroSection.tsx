@@ -47,9 +47,9 @@ export function HeroSection({ opacity, scale, y }: HeroSectionProps) {
               <Text
                 variant="body-lg"
                 color="secondary"
-                className="text-xl sm:text-2xl max-w-2xl mx-auto leading-relaxed"
+                className="text-xl sm:text-2xl max-w-3xl mx-auto leading-relaxed text-center"
               >
-                Plan your trips, relocations, and adventures with ease. Track budgets, manage timelines, and
+                Plan your trips, relocations, and adventures with ease.<br></br> Track budgets, manage timelines, and
                 organize your journey all in one place.
               </Text>
 
