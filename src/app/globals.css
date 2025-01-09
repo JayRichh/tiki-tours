@@ -47,16 +47,12 @@ code[class*="language-"] {
     /* Brand colors - warm terra with increased contrast */
     --brand: 28 60% 45%;
 
-    /* Primary colors - high contrast warm brown */
-    --primary: 28 75% 35%;
+    /* Primary colors - deep terra brown */
+    --primary: 28 70% 35%;
     --primary-foreground: 35 30% 98%;
 
-    /* Accent colors - high contrast soft purple */
-    --accent: 250 65% 45%;
-    --accent-foreground: 35 30% 98%;
-
-    /* Secondary colors - high contrast muted terra */
-    --secondary: 28 55% 40%;
+    /* Secondary colors - warm gold */
+    --secondary: 35 85% 45%;
     --secondary-foreground: 35 30% 98%;
 
     /* Success colors - high contrast muted sage */
@@ -94,10 +90,7 @@ code[class*="language-"] {
     --primary: 28 65% 75%;
     --primary-foreground: 28 25% 8%;
 
-    --accent: 250 55% 75%;
-    --accent-foreground: 28 25% 8%;
-
-    --secondary: 28 55% 70%;
+    --secondary: 35 65% 70%;
     --secondary-foreground: 28 25% 8%;
 
     --success: 145 55% 60%;
@@ -161,7 +154,7 @@ code[class*="language-"] {
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent;
   }
 
   .transition-smooth {
@@ -234,6 +227,15 @@ code[class*="language-"] {
 
   .btn-ghost {
     @apply text-foreground hover:bg-background-secondary/80;
+  }
+}
+
+@keyframes scrollBackground {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
   }
 }
 

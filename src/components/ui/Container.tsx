@@ -1,8 +1,8 @@
 "use client";
 
 import { HTMLMotionProps, motion } from "framer-motion";
-
 import { ReactNode, forwardRef } from "react";
+import { cn } from "~/utils/cn";
 
 interface ContainerProps extends Omit<HTMLMotionProps<"div">, "children"> {
   children?: ReactNode;
@@ -56,51 +56,36 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
       },
     };
 
-    // Base container styles
-    const containerStyles = `
-      relative
-      w-full
-      ${maxWidth ? containerSizes[size] : ""}
-      ${gutter ? "px-4 sm:px-6 lg:px-8" : ""}
-      ${centered ? "mx-auto" : ""}
-      ${className}
-    `;
-
-    // Glass effect styles
-    const glassStyles = `
-      ${glass ? "glass" : ""}
-      ${glassDark ? "dark:glass-dark" : ""}
-      ${!noPadding ? "p-6 sm:p-8" : ""}
-    `;
-
     return (
       <motion.div
         ref={ref}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className={containerStyles}
+        className={cn(
+          "relative w-full",
+          maxWidth && containerSizes[size],
+          gutter && "px-4 sm:px-6 lg:px-8",
+          centered && "mx-auto",
+          className
+        )}
         {...props}
       >
-        {/* Optional glass effect wrapper */}
         {glass || glassDark ? (
           <div
-            className={`
-            rounded-xl
-            backdrop-blur-sm
-            ${glassStyles}
-            ${innerClassName}
-          `}
+            className={cn(
+              "rounded-xl backdrop-blur-sm",
+              glass && "glass",
+              glassDark && "dark:glass-dark",
+              !noPadding && "p-6 sm:p-8",
+              innerClassName
+            )}
           >
-            {/* Dynamic background gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-white/0 dark:from-black/5 dark:to-black/0 rounded-xl" />
-
-            {/* Content with relative positioning */}
-            <div className="relative z-10">{children}</div>
+            <div className="relative z-10 w-full">{children}</div>
           </div>
         ) : (
-          // Regular content without glass effect
-          <div className={innerClassName}>{children}</div>
+          <div className={cn("w-full", innerClassName)}>{children}</div>
         )}
       </motion.div>
     );

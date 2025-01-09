@@ -1,5 +1,5 @@
 {
-  "name": "next-template",
+  "name": "tiki-tours",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,6 +14,16 @@
     "@dimforge/rapier3d-compat": "^0.14.0",
     "@hookform/resolvers": "^3.9.1",
     "@monaco-editor/react": "^4.6.0",
+    "@nivo/bar": "^0.88.0",
+    "@nivo/bump": "^0.88.0",
+    "@nivo/calendar": "^0.88.0",
+    "@nivo/chord": "^0.88.0",
+    "@nivo/core": "^0.88.0",
+    "@nivo/line": "^0.88.0",
+    "@nivo/pie": "^0.88.0",
+    "@nivo/sankey": "^0.88.0",
+    "@nivo/stream": "^0.88.0",
+    "@nivo/treemap": "^0.88.0",
     "@react-three/drei": "^9.117.1",
     "@react-three/fiber": "^8.17.10",
     "@react-three/postprocessing": "^2.16.3",

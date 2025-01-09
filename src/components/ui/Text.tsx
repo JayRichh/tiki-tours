@@ -5,7 +5,7 @@ import { HTMLAttributes, forwardRef } from "react";
 import { cn } from "~/utils/cn";
 
 type TextVariant = "h1" | "h2" | "h3" | "h4" | "body-lg" | "body" | "body-sm" | "caption";
-type TextGradient = "none" | "blue" | "purple" | "orange" | "primary";
+type TextGradient = "none" | "primary" | "accent" | "secondary";
 
 interface TextProps extends HTMLAttributes<HTMLDivElement> {
   variant?: TextVariant;
@@ -52,10 +52,9 @@ const alignClasses = {
 
 const gradientClasses: Record<TextGradient, string> = {
   none: "",
-  blue: "bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent",
-  purple: "bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent",
-  orange: "bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent",
-  primary: "bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent",
+  primary: "text-gradient",
+  accent: "text-gradient",
+  secondary: "text-gradient",
 };
 
 export const Text = forwardRef<HTMLDivElement, TextProps>(
@@ -83,7 +82,7 @@ export const Text = forwardRef<HTMLDivElement, TextProps>(
         ref={ref}
         className={cn(
           variantClasses[variant],
-          colorClasses[color],
+          gradient === "none" ? colorClasses[color] : "",
           weightClasses[finalWeight],
           alignClasses[align],
           gradientClasses[gradient],

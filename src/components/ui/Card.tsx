@@ -46,7 +46,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
         animate="visible"
         className={cn(
           "rounded-lg",
-          "flex flex-col",
+          "flex flex-col flex-1",
           {
             "h-full": fullHeight,
             "min-h-0": !fullHeight,

@@ -50,13 +50,14 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
           >
             <div
               className={cn(
                 "bg-background/95 backdrop-blur-md",
                 "rounded-xl shadow-xl border-2 border-border/50",
                 "w-full max-w-lg p-6",
+                "max-h-[90vh] overflow-y-auto",
                 className
               )}
             >

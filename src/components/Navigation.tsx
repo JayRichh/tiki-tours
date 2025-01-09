@@ -9,8 +9,8 @@ import { cn } from "~/utils/cn";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/examples", label: "Examples" },
-  { href: "/three", label: "3D Demo" },
+  { href: "/trips", label: "Trips" },
+  { href: "/about", label: "About" },
 ];
 
 export function Navigation() {
@@ -54,15 +54,14 @@ export function Navigation() {
 
           {/* Right side - Additional actions */}
           <div className="flex items-center space-x-4">
-            <a
-              href="https://github.com/jayrichh/next-template"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/trips"
+              key="start-planning"
               className="text-base font-medium text-foreground hover:text-primary transition-colors duration-200 group relative"
             >
-              GitHub
+              Start Planning
               <span className="absolute -bottom-[19px] left-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>
