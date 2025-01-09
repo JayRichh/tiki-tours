@@ -95,7 +95,7 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             }}
           >
             <Clock className="h-5 w-5" />
-            <Text variant="body-sm">Today's Activity</Text>
+            <Text variant="body-sm">Today&apos;s Activity</Text>
           </Button>
           <Button
             variant="outline"
@@ -107,7 +107,7 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             }}
           >
             <Calendar className="h-5 w-5" />
-            <Text variant="body-sm">Today's Event</Text>
+            <Text variant="body-sm">Today&apos;s Event</Text>
           </Button>
           <Button
             variant="outline"

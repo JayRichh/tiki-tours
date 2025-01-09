@@ -27,6 +27,16 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL('https://tiki.tours'),
   title: "Tiki Tours - Travel Planning Made Easy",
+  icons: {
+    icon: [
+      { url: '/koru-icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' }
+    ],
+    apple: [
+      { url: '/koru-icon.svg', type: 'image/svg+xml' }
+    ],
+    shortcut: ['/koru-icon.svg']
+  },
   description: "Plan your trips, relocations, and adventures with ease. Track budgets, manage timelines, and organize your journey.",
   keywords: ["travel planning", "trip organization", "vacation planner", "travel itinerary", "budget tracking"],
   authors: [{ name: "Tiki Tours" }],
