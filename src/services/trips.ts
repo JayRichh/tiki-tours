@@ -19,8 +19,59 @@ class TripService {
         endDate: '2026-02-28',
         status: 'relocating',
         tripBudget: 6000,
-        activities: [],
-        spentSoFar: 500,
+        activities: [
+          {
+            id: crypto.randomUUID(),
+            activityName: 'House Viewing',
+            activityCost: 50,
+            date: '2025-03-02',
+            location: 'Kitsilano, Vancouver',
+            duration: 2,
+            type: 'other',
+            bookingStatus: 'planned'
+          },
+          {
+            id: crypto.randomUUID(),
+            activityName: 'Welcome Dinner',
+            activityCost: 100,
+            date: '2025-03-02',
+            location: 'Gastown, Vancouver',
+            duration: 3,
+            type: 'food',
+            bookingStatus: 'planned'
+          },
+          {
+            id: crypto.randomUUID(),
+            activityName: 'Stanley Park Tour',
+            activityCost: 75,
+            date: '2025-03-03',
+            location: 'Stanley Park, Vancouver',
+            duration: 4,
+            type: 'sightseeing',
+            bookingStatus: 'planned'
+          },
+          {
+            id: crypto.randomUUID(),
+            activityName: 'Grouse Mountain Hike',
+            activityCost: 120,
+            date: '2025-03-04',
+            location: 'North Vancouver',
+            duration: 6,
+            type: 'adventure',
+            bookingStatus: 'planned'
+          },
+          {
+            id: crypto.randomUUID(),
+            activityName: 'Spa Day',
+            activityCost: 200,
+            date: '2025-03-05',
+            location: 'Downtown Vancouver',
+            duration: 4,
+            type: 'relaxation',
+            bookingStatus: 'planned'
+          }
+        ],
+        spentSoFar: 545,
         flexibleDates: true,
         relocationPlan: true,
         travelMode: 'flight',
