@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardHeader, CardContent } from "~/components/ui/Card";
 import { Text } from "~/components/ui/Text";
 import { Button } from "~/components/ui/Button";
@@ -25,9 +25,65 @@ export function TripActivities({
   onDeleteActivity,
   onAddActivity
 }: TripActivitiesProps) {
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // Get dialog state from URL hash
+  const [dialogState, setDialogState] = useState<{
+    type: "activity" | null;
+    action: "new" | "edit" | "delete" | null;
+    id?: string;
+  }>({ type: null, action: null });
+
+  const selectedActivity = useMemo(() => {
+    if (dialogState.id) {
+      return trip.activities.find(a => a.id === dialogState.id);
+    }
+    return undefined;
+  }, [dialogState.id, trip.activities]);
+
+  // Track today's date for new activity
+  const [todayDate, setTodayDate] = useState<string | undefined>();
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) {
+        setDialogState({ type: null, action: null });
+        setTodayDate(undefined);
+        return;
+      }
+
+      // Format: #tab/dialog/action/params
+      const [tab, dialog, action, ...params] = hash.split("/");
+      if (tab === "activities" && dialog === "activity" && action) {
+        const param = params.join("/"); // Rejoin any remaining params
+        if (param.startsWith("today=")) {
+          setTodayDate(param.split("=")[1]);
+        }
+
+        setDialogState({
+          type: "activity",
+          action: action as "new" | "edit" | "delete",
+          id: param && !param.startsWith("today=") ? param : undefined
+        });
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Helper to update dialog state and URL hash
+  const updateDialogState = (type: typeof dialogState.type, action: typeof dialogState.action, id?: string) => {
+    if (!type || !action) {
+      window.history.pushState(null, "", window.location.pathname + "#activities");
+      setDialogState({ type: null, action: null });
+      return;
+    }
+
+    const hash = `#activities/${type}/${action}${id ? `/${id}` : ''}`;
+    window.history.pushState(null, "", hash);
+    setDialogState({ type, action, id });
+  };
 
   // Activity type distribution
   const typeDistribution = useMemo(() => {
@@ -87,7 +143,7 @@ export function TripActivities({
               variant="primary"
               size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
-              onClick={() => setIsAddModalOpen(true)}
+              onClick={() => updateDialogState("activity", "new")}
             >
               Add Activity
             </Button>
@@ -124,15 +180,18 @@ export function TripActivities({
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge className="capitalize">{activity.type}</Badge>
+                    <Badge variant="solid" color="primary" className="capitalize">
+                      {activity.type}
+                    </Badge>
                     {activity.bookingStatus && (
                       <Badge
-                        className={
+                        variant="solid"
+                        color={
                           activity.bookingStatus === "completed"
-                            ? "bg-green-500"
+                            ? "success"
                             : activity.bookingStatus === "booked"
-                            ? "bg-blue-500"
-                            : "bg-yellow-500"
+                            ? "info"
+                            : "warning"
                         }
                       >
                         {activity.bookingStatus}
@@ -142,16 +201,13 @@ export function TripActivities({
                       variant="ghost"
                       size="icon"
                       leftIcon={<Edit2 className="h-4 w-4" />}
-                      onClick={() => setSelectedActivity(activity)}
+                      onClick={() => updateDialogState("activity", "edit", activity.id)}
                     />
                     <Button
                       variant="ghost"
                       size="icon"
                       leftIcon={<Trash2 className="h-4 w-4" />}
-                      onClick={() => {
-                        setSelectedActivity(activity);
-                        setIsDeleteModalOpen(true);
-                      }}
+                      onClick={() => updateDialogState("activity", "delete", activity.id)}
                     />
                   </div>
                 </div>
@@ -218,38 +274,28 @@ export function TripActivities({
 
       {/* Activity Form Modal */}
       <Modal
-        isOpen={isAddModalOpen || !!selectedActivity}
-        onClose={() => {
-          setIsAddModalOpen(false);
-          setSelectedActivity(null);
-        }}
-        title={selectedActivity ? "Edit Activity" : "Add Activity"}
+        isOpen={dialogState.type === "activity" && (dialogState.action === "new" || dialogState.action === "edit")}
+        onClose={() => updateDialogState(null, null)}
+        title={dialogState.action === "edit" ? "Edit Activity" : "Add Activity"}
       >
         <ActivityForm
-          activity={selectedActivity || undefined}
+          activity={selectedActivity || (todayDate ? { date: todayDate } as Partial<Activity> : undefined)}
           onSubmit={(data: Omit<Activity, "id">) => {
-            if (selectedActivity) {
-              onUpdateActivity?.(selectedActivity.id, data);
+            if (dialogState.action === "edit" && dialogState.id) {
+              onUpdateActivity?.(dialogState.id, data);
             } else {
               onAddActivity?.(data);
             }
-            setIsAddModalOpen(false);
-            setSelectedActivity(null);
+            updateDialogState(null, null);
           }}
-          onCancel={() => {
-            setIsAddModalOpen(false);
-            setSelectedActivity(null);
-          }}
+          onCancel={() => updateDialogState(null, null)}
         />
       </Modal>
 
       {/* Delete Confirmation Modal */}
       <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setSelectedActivity(null);
-        }}
+        isOpen={dialogState.type === "activity" && dialogState.action === "delete"}
+        onClose={() => updateDialogState(null, null)}
         title="Delete Activity"
       >
         <div className="space-y-6">
@@ -259,21 +305,17 @@ export function TripActivities({
           <div className="flex justify-end gap-4">
             <Button
               variant="ghost"
-              onClick={() => {
-                setIsDeleteModalOpen(false);
-                setSelectedActivity(null);
-              }}
+              onClick={() => updateDialogState(null, null)}
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={() => {
-                if (selectedActivity && onDeleteActivity) {
-                  onDeleteActivity(selectedActivity.id);
+                if (dialogState.id && onDeleteActivity) {
+                  onDeleteActivity(dialogState.id);
                 }
-                setIsDeleteModalOpen(false);
-                setSelectedActivity(null);
+                updateDialogState(null, null);
               }}
             >
               Delete

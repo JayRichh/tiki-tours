@@ -6,7 +6,7 @@ import { Text } from "~/components/ui/Text";
 import { Activity } from "~/types/trips";
 
 interface ActivityFormProps {
-  activity?: Activity;
+  activity?: Partial<Activity>;
   onSubmit: (data: Omit<Activity, "id">) => void;
   onCancel: () => void;
 }

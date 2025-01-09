@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Trip, Checklist, ChecklistItem } from "~/types/trips";
 import { ChecklistForm, ChecklistFormData } from "./ChecklistForm";
 import { Card, CardHeader, CardContent } from "~/components/ui/Card";
@@ -16,9 +16,50 @@ interface TripChecklistsProps {
 }
 
 export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
-  const [isAddingChecklist, setIsAddingChecklist] = useState(false);
-  const [isAddingItem, setIsAddingItem] = useState<string | null>(null);
-  const [selectedChecklist, setSelectedChecklist] = useState<Checklist | null>(null);
+  // Get dialog state from URL hash
+  const [dialogState, setDialogState] = useState<{
+    type: "checklist" | "item" | null;
+    action: "new" | "edit" | null;
+    id?: string;
+  }>({ type: null, action: null });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) {
+        setDialogState({ type: null, action: null });
+        return;
+      }
+
+      // Format: #tab/dialog/action/params
+      const [tab, dialog, action, ...params] = hash.split("/");
+      if (tab === "checklists" && (dialog === "checklist" || dialog === "item") && action) {
+        const param = params.join("/"); // Rejoin any remaining params
+        setDialogState({
+          type: dialog as "checklist" | "item",
+          action: action as "new" | "edit",
+          id: param || undefined
+        });
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Helper to update dialog state and URL hash
+  const updateDialogState = (type: typeof dialogState.type, action: typeof dialogState.action, id?: string) => {
+    if (!type || !action) {
+      window.history.pushState(null, "", window.location.pathname + "#checklists");
+      setDialogState({ type: null, action: null });
+      return;
+    }
+
+    const hash = `#checklists/${type}/${action}${id ? `/${id}` : ''}`;
+    window.history.pushState(null, "", hash);
+    setDialogState({ type, action, id });
+  };
 
   const handleAddChecklist = useCallback(async (data: ChecklistFormData) => {
     const newChecklist: Checklist = {
@@ -32,7 +73,7 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
     await onUpdate({
       checklists: [...(trip.checklists || []), newChecklist]
     });
-    setIsAddingChecklist(false);
+    updateDialogState(null, null);
   }, [trip, onUpdate]);
 
   const handleAddItem = useCallback(async (checklistId: string, data: ChecklistFormData) => {
@@ -52,7 +93,7 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
     );
 
     await onUpdate({ checklists: updatedChecklists });
-    setIsAddingItem(null);
+    updateDialogState(null, null);
   }, [trip, onUpdate]);
 
   const handleToggleItem = useCallback(async (checklistId: string, itemId: string) => {
@@ -108,7 +149,7 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
               variant="primary"
               size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
-              onClick={() => setIsAddingChecklist(true)}
+              onClick={() => updateDialogState("checklist", "new")}
             >
               Add Checklist
             </Button>
@@ -127,14 +168,14 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
                       variant="ghost"
                       size="sm"
                       leftIcon={<Plus className="h-4 w-4" />}
-                      onClick={() => setIsAddingItem(checklist.id)}
+                      onClick={() => updateDialogState("item", "new", checklist.id)}
                     >
                       Add Item
                     </Button>
                   </div>
                 }
                 subtitle={checklist.category && (
-                  <Badge variant="secondary">{checklist.category}</Badge>
+                  <Badge variant="solid" color="primary">{checklist.category}</Badge>
                 )}
               />
               <CardContent className="w-full">
@@ -193,26 +234,26 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
         </div>
 
         <Modal
-          isOpen={isAddingChecklist}
-          onClose={() => setIsAddingChecklist(false)}
+          isOpen={dialogState.type === "checklist" && dialogState.action === "new"}
+          onClose={() => updateDialogState(null, null)}
           title="New Checklist"
         >
           <ChecklistForm
             onSubmit={handleAddChecklist}
-            onCancel={() => setIsAddingChecklist(false)}
+            onCancel={() => updateDialogState(null, null)}
           />
         </Modal>
 
         <Modal
-          isOpen={!!isAddingItem}
-          onClose={() => setIsAddingItem(null)}
+          isOpen={dialogState.type === "item" && dialogState.action === "new"}
+          onClose={() => updateDialogState(null, null)}
           title="New Checklist Item"
         >
-          {isAddingItem && (
+          {dialogState.type === "item" && dialogState.action === "new" && dialogState.id && (
             <ChecklistForm
               isItem
-              onSubmit={(data) => handleAddItem(isAddingItem, data)}
-              onCancel={() => setIsAddingItem(null)}
+              onSubmit={(data) => handleAddItem(dialogState.id!, data)}
+              onCancel={() => updateDialogState(null, null)}
             />
           )}
         </Modal>

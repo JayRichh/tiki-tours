@@ -53,12 +53,12 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             <div className="flex items-center gap-4">
               <Text variant="h2" gradient="primary" balance>{trip.destination}</Text>
               <div className="flex items-center gap-2">
-                <Badge className={`${statusColors[trip.status]} text-sm`}>{trip.status}</Badge>
+                <Badge variant="solid" color="primary" className="text-sm capitalize">{trip.status}</Badge>
                 {trip.relocationPlan && (
-                  <Badge className="bg-purple-500/90 text-sm">Relocation</Badge>
+                  <Badge variant="solid" color="info" className="text-sm">Relocation</Badge>
                 )}
                 {trip.flexibleDates && (
-                  <Badge className="bg-blue-500/90 text-sm">Flexible Dates</Badge>
+                  <Badge variant="solid" color="success" className="text-sm">Flexible Dates</Badge>
                 )}
               </div>
             </div>
@@ -73,11 +73,14 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
       />
       <CardContent className="space-y-8">
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           <Button
             variant="outline"
             className="flex flex-col items-center gap-3 h-auto py-6 hover:bg-primary/5 transition-colors duration-300"
-            onClick={() => onTabChange?.("activities")}
+            onClick={() => {
+              window.location.hash = "activities/activity/new";
+              onTabChange?.("activities");
+            }}
           >
             <Plus className="h-5 w-5" />
             <Text variant="body-sm">Add Activity</Text>
@@ -85,7 +88,34 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
           <Button
             variant="outline"
             className="flex flex-col items-center gap-2 h-auto py-4"
-            onClick={() => onTabChange?.("checklists")}
+            onClick={() => {
+              const today = new Date().toISOString().split('T')[0];
+              window.location.hash = `activities/activity/new/today=${today}`;
+              onTabChange?.("activities");
+            }}
+          >
+            <Clock className="h-5 w-5" />
+            <Text variant="body-sm">Today's Activity</Text>
+          </Button>
+          <Button
+            variant="outline"
+            className="flex flex-col items-center gap-2 h-auto py-4"
+            onClick={() => {
+              const today = new Date().toISOString().split('T')[0];
+              window.location.hash = `planning/event/new/today=${today}`;
+              onTabChange?.("planning");
+            }}
+          >
+            <Calendar className="h-5 w-5" />
+            <Text variant="body-sm">Today's Event</Text>
+          </Button>
+          <Button
+            variant="outline"
+            className="flex flex-col items-center gap-2 h-auto py-4"
+            onClick={() => {
+              window.location.hash = "checklists/checklist/new";
+              onTabChange?.("checklists");
+            }}
           >
             <List className="h-5 w-5" />
             <Text variant="body-sm">New Checklist</Text>
@@ -93,18 +123,26 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
           <Button
             variant="outline"
             className="flex flex-col items-center gap-2 h-auto py-4"
-            onClick={() => onTabChange?.("planning")}
+            onClick={() => {
+              window.location.hash = "planning/deadline/new";
+              onTabChange?.("planning");
+            }}
           >
-            <FileText className="h-5 w-5" />
-            <Text variant="body-sm">Add Key Event</Text>
+            <AlertCircle className="h-5 w-5" />
+            <Text variant="body-sm">Set Deadline</Text>
           </Button>
           <Button
             variant="outline"
             className="flex flex-col items-center gap-2 h-auto py-4"
-            onClick={() => onTabChange?.("planning")}
+            onClick={() => {
+              const nextWeek = new Date();
+              nextWeek.setDate(nextWeek.getDate() + 7);
+              window.location.hash = `planning/deadline/new/date=${nextWeek.toISOString().split('T')[0]}`;
+              onTabChange?.("planning");
+            }}
           >
-            <AlertCircle className="h-5 w-5" />
-            <Text variant="body-sm">Set Deadline</Text>
+            <Clock className="h-5 w-5" />
+            <Text variant="body-sm">Upcoming Deadline</Text>
           </Button>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardHeader, CardContent } from "~/components/ui/Card";
 import { Text } from "~/components/ui/Text";
 import { Badge } from "~/components/ui/Badge";
@@ -28,10 +28,71 @@ export function TripPlanning({
   onUpdateDeadline,
   onDeleteDeadline
 }: TripPlanningProps) {
-  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
-  const [isDeadlineModalOpen, setIsDeadlineModalOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<KeyEvent | null>(null);
-  const [selectedDeadline, setSelectedDeadline] = useState<Deadline | null>(null);
+  // Get dialog state from URL hash
+  const [dialogState, setDialogState] = useState<{
+    type: "event" | "deadline" | null;
+    action: "new" | "edit" | null;
+    id?: string;
+    date?: string;
+  }>({ type: null, action: null });
+
+  const selectedEvent = useMemo(() => {
+    if (dialogState.type === "event" && dialogState.id) {
+      return trip.keyEvents?.find(e => e.id === dialogState.id);
+    }
+    return dialogState.date ? { date: dialogState.date } as Partial<KeyEvent> : undefined;
+  }, [dialogState, trip.keyEvents]);
+
+  const selectedDeadline = useMemo(() => {
+    if (dialogState.type === "deadline" && dialogState.id) {
+      return trip.deadlines?.find(d => d.id === dialogState.id);
+    }
+    return dialogState.date ? { dueDate: dialogState.date } as Partial<Deadline> : undefined;
+  }, [dialogState, trip.deadlines]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) {
+        setDialogState({ type: null, action: null });
+        return;
+      }
+
+      // Format: #tab/dialog/action/params
+      const [tab, dialog, action, ...params] = hash.split("/");
+      if (tab === "planning" && (dialog === "event" || dialog === "deadline") && action) {
+        const param = params.join("/"); // Rejoin any remaining params
+        let date: string | undefined;
+        if (param.startsWith("today=") || param.startsWith("date=")) {
+          date = param.split("=")[1];
+        }
+
+        setDialogState({
+          type: dialog as "event" | "deadline",
+          action: action as "new" | "edit",
+          id: param && !param.startsWith("today=") && !param.startsWith("date=") ? param : undefined,
+          date
+        });
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Helper to update dialog state and URL hash
+  const updateDialogState = (type: typeof dialogState.type, action: typeof dialogState.action, id?: string, date?: string) => {
+    if (!type || !action) {
+      window.history.pushState(null, "", window.location.pathname + "#planning");
+      setDialogState({ type: null, action: null });
+      return;
+    }
+
+    const hash = `#planning/${type}/${action}${id ? `/${id}` : ''}${date ? `/date=${date}` : ''}`;
+    window.history.pushState(null, "", hash);
+    setDialogState({ type, action, id, date });
+  };
 
   const handleEventSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,13 +105,12 @@ export function TripPlanning({
       priorityLevel: formData.get("priorityLevel") as "low" | "medium" | "high" || "medium"
     };
 
-    if (selectedEvent) {
-      onUpdateKeyEvent?.(selectedEvent.id, data);
+    if (dialogState.action === "edit" && dialogState.id) {
+      onUpdateKeyEvent?.(dialogState.id, data);
     } else {
       onAddKeyEvent?.(data);
     }
-    setIsEventModalOpen(false);
-    setSelectedEvent(null);
+    updateDialogState(null, null);
   };
 
   const handleDeadlineSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -63,13 +123,12 @@ export function TripPlanning({
       completed: formData.get("completed") === "true"
     };
 
-    if (selectedDeadline) {
-      onUpdateDeadline?.(selectedDeadline.id, data);
+    if (dialogState.action === "edit" && dialogState.id) {
+      onUpdateDeadline?.(dialogState.id, data);
     } else {
       onAddDeadline?.(data);
     }
-    setIsDeadlineModalOpen(false);
-    setSelectedDeadline(null);
+    updateDialogState(null, null);
   };
 
   return (
@@ -83,7 +142,7 @@ export function TripPlanning({
                 variant="outline"
                 size="sm"
                 leftIcon={<Plus className="h-4 w-4" />}
-                onClick={() => setIsDeadlineModalOpen(true)}
+                onClick={() => updateDialogState("deadline", "new")}
               >
                 Add Deadline
               </Button>
@@ -91,7 +150,7 @@ export function TripPlanning({
                 variant="primary"
                 size="sm"
                 leftIcon={<Plus className="h-4 w-4" />}
-                onClick={() => setIsEventModalOpen(true)}
+                onClick={() => updateDialogState("event", "new")}
               >
                 Add Event
               </Button>
@@ -113,7 +172,7 @@ export function TripPlanning({
                   className="p-4 rounded-lg bg-background-secondary border border-border/50"
                 >
                   <div className="flex items-center justify-between">
-          <div className="w-full">
+                    <div className="w-full">
                       <Text variant="body">{event.title}</Text>
                       <div className="flex items-center gap-4 text-sm text-foreground-secondary">
                         <div className="flex items-center gap-1">
@@ -129,12 +188,13 @@ export function TripPlanning({
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge
-                        className={
+                        variant="solid"
+                        color={
                           event.priorityLevel === "high"
-                            ? "bg-red-500"
+                            ? "error"
                             : event.priorityLevel === "medium"
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
+                            ? "warning"
+                            : "info"
                         }
                       >
                         {event.priorityLevel}
@@ -142,10 +202,7 @@ export function TripPlanning({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          setSelectedEvent(event);
-                          setIsEventModalOpen(true);
-                        }}
+                        onClick={() => updateDialogState("event", "edit", event.id)}
                       >
                         Edit
                       </Button>
@@ -192,10 +249,7 @@ export function TripPlanning({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          setSelectedDeadline(deadline);
-                          setIsDeadlineModalOpen(true);
-                        }}
+                        onClick={() => updateDialogState("deadline", "edit", deadline.id)}
                       >
                         Edit
                       </Button>
@@ -210,12 +264,9 @@ export function TripPlanning({
 
       {/* Event Modal */}
       <Modal
-        isOpen={isEventModalOpen}
-        onClose={() => {
-          setIsEventModalOpen(false);
-          setSelectedEvent(null);
-        }}
-        title={selectedEvent ? "Edit Event" : "Add Event"}
+        isOpen={dialogState.type === "event"}
+        onClose={() => updateDialogState(null, null)}
+        title={dialogState.action === "edit" ? "Edit Event" : "Add Event"}
       >
         <form onSubmit={handleEventSubmit} className="space-y-6">
           <div className="space-y-4">
@@ -264,15 +315,12 @@ export function TripPlanning({
           <div className="flex justify-end gap-4">
             <Button
               variant="ghost"
-              onClick={() => {
-                setIsEventModalOpen(false);
-                setSelectedEvent(null);
-              }}
+              onClick={() => updateDialogState(null, null)}
             >
               Cancel
             </Button>
             <Button variant="primary" type="submit">
-              {selectedEvent ? "Update" : "Create"}
+              {dialogState.action === "edit" ? "Update" : "Create"}
             </Button>
           </div>
         </form>
@@ -280,12 +328,9 @@ export function TripPlanning({
 
       {/* Deadline Modal */}
       <Modal
-        isOpen={isDeadlineModalOpen}
-        onClose={() => {
-          setIsDeadlineModalOpen(false);
-          setSelectedDeadline(null);
-        }}
-        title={selectedDeadline ? "Edit Deadline" : "Add Deadline"}
+        isOpen={dialogState.type === "deadline"}
+        onClose={() => updateDialogState(null, null)}
+        title={dialogState.action === "edit" ? "Edit Deadline" : "Add Deadline"}
       >
         <form onSubmit={handleDeadlineSubmit} className="space-y-6">
           <div className="space-y-4">
@@ -309,12 +354,12 @@ export function TripPlanning({
                 required
               />
             </div>
-            {selectedDeadline && (
+            {dialogState.action === "edit" && (
               <div>
                 <Text variant="body-sm" color="secondary">Status</Text>
                 <select
                   name="completed"
-                  defaultValue={selectedDeadline.completed ? "true" : "false"}
+                  defaultValue={selectedDeadline?.completed ? "true" : "false"}
                   className="w-full px-4 py-2 rounded-lg border-2 border-border/50 bg-background/50"
                 >
                   <option value="false">Pending</option>
@@ -326,15 +371,12 @@ export function TripPlanning({
           <div className="flex justify-end gap-4">
             <Button
               variant="ghost"
-              onClick={() => {
-                setIsDeadlineModalOpen(false);
-                setSelectedDeadline(null);
-              }}
+              onClick={() => updateDialogState(null, null)}
             >
               Cancel
             </Button>
             <Button variant="primary" type="submit">
-              {selectedDeadline ? "Update" : "Create"}
+              {dialogState.action === "edit" ? "Update" : "Create"}
             </Button>
           </div>
         </form>

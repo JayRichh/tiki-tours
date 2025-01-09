@@ -156,7 +156,7 @@ export function TripBudget({ trip }: TripBudgetProps) {
             <Text variant="body-sm" color="secondary" className="mb-4">
               Cumulative Spending
             </Text>
-            <div className="h-[200px] w-full">
+            <div className="h-[300px] w-full">
               <ResponsiveLine
                 data={spendingTrend}
                 margin={{ top: 30, right: 30, bottom: 70, left: 80 }}

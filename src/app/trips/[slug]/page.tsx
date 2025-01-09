@@ -117,6 +117,56 @@ export default function TripDetailPage() {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
+  // Handle URL hash for tab and dialog state
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) return;
+
+      // Format: #tab/dialog/action/params
+      const [tab, dialog, action, ...params] = hash.split("/");
+      
+      // Set active tab if it exists
+      if (tab && ["overview", "dashboard", "timeline", "activities", "planning", "checklists", "reports"].includes(tab)) {
+        setActiveTab(tab);
+      }
+
+      // Set dialog state if present
+      if (dialog && action) {
+        const param = params.join("/"); // Rejoin any remaining params
+        if (param.startsWith("today=") || param.startsWith("date=")) {
+          // Handle date parameters
+          const date = param.split("=")[1];
+          window.sessionStorage.setItem("dialogDate", date);
+        } else if (param) {
+          // Handle ID parameter
+          window.sessionStorage.setItem("dialogId", param);
+        }
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Update URL hash when tab changes
+  useEffect(() => {
+    const currentHash = window.location.hash.slice(1);
+    const [, dialog, action, ...params] = currentHash.split("/");
+    
+    let newHash = `#${activeTab}`;
+    if (dialog && action) {
+      newHash += `/${dialog}/${action}`;
+      if (params.length > 0) {
+        newHash += `/${params.join("/")}`;
+      }
+    }
+    
+    if (window.location.hash !== newHash) {
+      window.history.pushState(null, "", newHash);
+    }
+  }, [activeTab]);
 
   // Load trip data
   useEffect(() => {
@@ -265,6 +315,7 @@ export default function TripDetailPage() {
   const tabContent = renderTabContent(trip, handlers, setActiveTab);
   const tabs = getTabs(trip, tabContent);
 
+
   return (
     <Container size="full" className="pb-8 flex flex-col flex-1">
       <div className="space-y-6 flex flex-col flex-1 max-w-[1400px] mx-auto">
@@ -273,7 +324,10 @@ export default function TripDetailPage() {
           <TabGroup
             tabs={tabs}
             value={activeTab}
-            onChange={setActiveTab}
+            onChange={(tab) => {
+              setActiveTab(tab);
+              // Keep dialog state when changing tabs
+            }}
             variant="pills"
             className="h-full"
           />
