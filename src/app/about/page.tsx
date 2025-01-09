@@ -38,7 +38,7 @@ export default function AboutPage() {
                     Our Mission
                   </Text>
                   <Text className="text-lg leading-relaxed">
-                    We're dedicated to empowering travelers with cutting-edge tools that make trip planning effortless and collaborative. From personalized itineraries to smart budgeting features, we're here to enhance every step of your journey.
+                    We&quot;re dedicated to empowering travelers with cutting-edge tools that make trip planning effortless and collaborative. From personalized itineraries to smart budgeting features, we&quot;re here to enhance every step of your journey.
                   </Text>
                 </div>
 
