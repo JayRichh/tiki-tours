@@ -43,7 +43,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof testimoni
           <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500" />
         ))}
       </div>
-      <Text className="mb-4 text-foreground-secondary italic">"{testimonial.content}"</Text>
+      <Text className="mb-4 text-foreground-secondary italic">&quot;{testimonial.content}&quot;</Text>
       <div>
         <Text weight="medium">{testimonial.name}</Text>
         <Text variant="body-sm" color="secondary">
@@ -63,7 +63,7 @@ export function TestimonialsSection() {
             What Our Users Say
           </h1>
           <Text variant="body-lg" color="secondary" className="text-lg leading-relaxed">
-            Join thousands of travelers who've simplified their journey planning
+            Join thousands of travelers who&apos;ve simplified their journey planning
           </Text>
         </div>
 
