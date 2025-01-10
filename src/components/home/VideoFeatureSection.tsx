@@ -37,7 +37,7 @@ export function VideoFeatureSection() {
             <Suspense fallback={<VideoSkeleton />}>
               <VideoPlayer
                 
-                src="https://player.vimeo.com/video/1045638761?badge=0&autopause=1&player_id=0&app_id=58479&background=1&muted=1&autoplay=1&dnt=0&data-cookie=1"
+                src="https://player.vimeo.com/video/1045638761?badge=0&autopause=1&player_id=0&app_id=58479&background=1&muted=1&autoplay=1&dnt=1"
 
                 title="Trip Overview Video"
               />
