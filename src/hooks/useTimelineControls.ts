@@ -13,32 +13,36 @@ interface TimelineDay {
 interface TimelineControls {
   currentMonth: number;
   currentYear: number;
-  scale: number;
+  zoomLevel: number;
   days: TimelineDay[];
   calendarConfig: {
     from: string;
     to: string;
     emptyColor: string;
     colors: string[];
-    daySpacing: number;
     dayBorderWidth: number;
-    monthSpacing: number;
     monthBorderColor: string;
     monthLegendOffset: number;
-    yearSpacing: number;
     theme: any;
   };
   setMonth: (month: number) => void;
   setYear: (year: number) => void;
-  setScale: (scale: number) => void;
+  setZoomLevel: (level: number) => void;
   getHighlightColor: (value: number) => string;
   getDayActivities: (date: string) => { activities: Activity[]; events: KeyEvent[] };
 }
 
+const ZOOM_RANGES = {
+  1: 180, // 6 months
+  2: 90,  // 3 months
+  3: 60,  // 2 months
+  4: 30,  // 1 month
+};
+
 export function useTimelineControls(trip: Trip): TimelineControls {
   const [currentMonth, setMonth] = useState(() => new Date(trip.startDate).getMonth());
   const [currentYear, setYear] = useState(() => new Date(trip.startDate).getFullYear());
-  const [scale, setScale] = useState(1);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   // Color scale for activity density
   const colorScale = ["#e5f6ff", "#93c5fd", "#60a5fa", "#3b82f6", "#2563eb"];
@@ -51,13 +55,31 @@ export function useTimelineControls(trip: Trip): TimelineControls {
     return colorScale[4];
   }, []);
 
+  // Calculate date range based on zoom level
+  const dateRange = useMemo(() => {
+    const daysToShow = ZOOM_RANGES[zoomLevel as keyof typeof ZOOM_RANGES];
+    const centerDate = new Date(currentYear, currentMonth, 15);
+    const halfRange = Math.floor(daysToShow / 2);
+
+    const from = new Date(centerDate);
+    from.setDate(from.getDate() - halfRange);
+    
+    const to = new Date(centerDate);
+    to.setDate(to.getDate() + halfRange);
+
+    return {
+      from: from.toISOString().split('T')[0],
+      to: to.toISOString().split('T')[0]
+    };
+  }, [currentMonth, currentYear, zoomLevel]);
+
   // Process timeline data
   const days = useMemo(() => {
     const dayMap = new Map<string, TimelineDay>();
-    const startDate = new Date(trip.startDate);
-    const endDate = new Date(trip.endDate);
+    const startDate = new Date(dateRange.from);
+    const endDate = new Date(dateRange.to);
 
-    // Initialize all days in range
+    // Initialize days in range
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split("T")[0];
       dayMap.set(dateStr, {
@@ -92,21 +114,18 @@ export function useTimelineControls(trip: Trip): TimelineControls {
     });
 
     return Array.from(dayMap.values());
-  }, [trip, getHighlightColor]);
+  }, [trip, getHighlightColor, dateRange]);
 
   // Calendar configuration
   const calendarConfig = useMemo(
     () => ({
-      from: trip.startDate.split("T")[0],
-      to: trip.endDate.split("T")[0],
+      from: dateRange.from,
+      to: dateRange.to,
       emptyColor: "#f3f4f6",
       colors: colorScale,
-      daySpacing: 3,
       dayBorderWidth: 2,
-      monthSpacing: 40,
       monthBorderColor: "#ffffff",
       monthLegendOffset: 24,
-      yearSpacing: 60,
       theme: {
         labels: {
           text: {
@@ -147,7 +166,7 @@ export function useTimelineControls(trip: Trip): TimelineControls {
         },
       },
     }),
-    [trip, colorScale]
+    [dateRange, colorScale]
   );
 
   const getDayActivities = useCallback(
@@ -164,12 +183,12 @@ export function useTimelineControls(trip: Trip): TimelineControls {
   return {
     currentMonth,
     currentYear,
-    scale,
+    zoomLevel,
     days,
     calendarConfig,
     setMonth,
     setYear,
-    setScale,
+    setZoomLevel,
     getHighlightColor,
     getDayActivities,
   };

@@ -3,7 +3,7 @@
 import { ResponsiveLine } from "@nivo/line";
 import { Point, PointTooltipProps, Serie } from "@nivo/line";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { Text } from "~/components/ui/Text";
 
@@ -26,22 +26,16 @@ const formatTooltipDate = (date: string): string => {
 };
 
 export function ActivityDistribution({ trip, onPointClick }: ActivityDistributionProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, updateScale] = useChartDimensions(containerRef, {
-    marginTop: 50,
-    marginRight: 110,
-    marginBottom: 50,
-    marginLeft: 60,
-    minHeight: 400,
-    maxScale: 1.5,
-    minScale: 0.5,
-  });
+  const [zoomLevel, setZoomLevel] = useState(1);
 
-  const chartDimensions = {
-    ...dimensions,
-    boundedWidth: dimensions.width - dimensions.marginLeft - dimensions.marginRight,
-    boundedHeight: dimensions.height - dimensions.marginTop - dimensions.marginBottom,
+  const ZOOM_LEVELS = {
+    1: { width: 800, height: 400 },
+    2: { width: 1000, height: 500 },
+    3: { width: 1200, height: 600 },
+    4: { width: 1400, height: 700 },
   };
+
+  const dimensions = ZOOM_LEVELS[zoomLevel as keyof typeof ZOOM_LEVELS];
 
   // Process activity data
   const activityTypes = ["sightseeing", "food", "adventure", "relaxation", "other"];
@@ -79,33 +73,39 @@ export function ActivityDistribution({ trip, onPointClick }: ActivityDistributio
   return (
     <div className="space-y-4">
       <Text variant="h4">Activity Distribution</Text>
-      <div
-        ref={containerRef}
-        className="relative bg-background/50 rounded-lg p-6"
-        style={{ height: dimensions.height }}
-      >
-        <div
-          className="w-full h-full"
-          style={{
-            transform: `scale(${dimensions.scale})`,
-            transformOrigin: "top left",
-            transition: "none",
-          }}
-          key={dimensions.scale}
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          onClick={() => setZoomLevel(Math.max(1, zoomLevel - 1))}
+          className="p-2 rounded-lg bg-background-secondary hover:bg-background-secondary/80"
+          disabled={zoomLevel === 1}
         >
-          <ResponsiveLine
+          <Text>-</Text>
+        </button>
+        <button
+          onClick={() => setZoomLevel(Math.min(4, zoomLevel + 1))}
+          className="p-2 rounded-lg bg-background-secondary hover:bg-background-secondary/80"
+          disabled={zoomLevel === 4}
+        >
+          <Text>+</Text>
+        </button>
+      </div>
+      
+      <div
+        className="relative bg-background/50 rounded-lg p-6"
+        style={{ 
+          width: dimensions.width,
+          height: dimensions.height 
+        }}
+        key={zoomLevel}
+      >
+        <ResponsiveLine
             data={lineData}
             margin={{
-              top: chartDimensions.marginTop,
-              right: chartDimensions.marginRight,
-              bottom: chartDimensions.marginBottom,
-              left: chartDimensions.marginLeft,
+              top: 50,
+              right: 110,
+              bottom: 50,
+              left: 60,
             }}
-            lineWidth={
-              chartDimensions.boundedWidth +
-              chartDimensions.marginLeft +
-              chartDimensions.marginRight
-            }
             // lineHeight={chartDimensions.boundedHeight + chartDimensions.marginTop + chartDimensions.marginBottom}
             xScale={{
               type: "time",
@@ -221,7 +221,6 @@ export function ActivityDistribution({ trip, onPointClick }: ActivityDistributio
               </div>
             )}
           />
-        </div>
       </div>
     </div>
   );

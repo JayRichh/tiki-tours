@@ -9,7 +9,6 @@ interface Dimensions {
   marginRight: number;
   marginBottom: number;
   marginLeft: number;
-  scale: number;
 }
 
 interface ChartSettings {
@@ -19,14 +18,14 @@ interface ChartSettings {
   marginLeft?: number;
   minHeight?: number;
   minWidth?: number;
-  maxScale?: number;
-  minScale?: number;
+  baseHeight?: number;
+  baseWidth?: number;
 }
 
 export function useChartDimensions(
   ref: RefObject<HTMLDivElement>,
   settings: ChartSettings = {}
-): [Dimensions, (scale: number) => void] {
+): Dimensions {
   const {
     marginTop = 0,
     marginRight = 0,
@@ -34,20 +33,19 @@ export function useChartDimensions(
     marginLeft = 0,
     minHeight = 300,
     minWidth = 200,
-    maxScale = 1.5,
-    minScale = 0.5,
+    baseHeight = 500,
+    baseWidth = 800,
   } = settings;
 
   const [dimensions, setDimensions] = useState<Dimensions>({
-    width: 0,
-    height: 0,
-    boundedWidth: 0,
-    boundedHeight: 0,
+    width: baseWidth,
+    height: baseHeight,
+    boundedWidth: baseWidth - marginLeft - marginRight,
+    boundedHeight: baseHeight - marginTop - marginBottom,
     marginTop,
     marginRight,
     marginBottom,
     marginLeft,
-    scale: 1,
   });
 
   const updateDimensions = useCallback(() => {
@@ -86,18 +84,5 @@ export function useChartDimensions(
     };
   }, [ref, updateDimensions]);
 
-  const updateScale = useCallback(
-    (newScale: number) => {
-      const clampedScale = Math.min(Math.max(minScale, newScale), maxScale);
-      setDimensions((prev) => ({
-        ...prev,
-        scale: clampedScale,
-        boundedWidth: prev.width * clampedScale - marginLeft - marginRight,
-        boundedHeight: prev.height * clampedScale - marginTop - marginBottom,
-      }));
-    },
-    [maxScale, minScale, marginLeft, marginRight, marginTop, marginBottom]
-  );
-
-  return [dimensions, updateScale];
+  return dimensions;
 }

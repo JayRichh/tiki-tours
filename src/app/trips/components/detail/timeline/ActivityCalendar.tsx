@@ -7,7 +7,6 @@ import { useRef } from "react";
 
 import { Text } from "~/components/ui/Text";
 
-import { useChartDimensions } from "~/hooks/useChartDimensions";
 import { useTimelineControls } from "~/hooks/useTimelineControls";
 
 import { Trip } from "~/types/trips";
@@ -24,30 +23,15 @@ interface CustomCalendarDatum extends CalendarDatum {
 }
 
 export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, updateScale] = useChartDimensions(containerRef, {
-    marginTop: 50,
-    marginRight: 110,
-    marginBottom: 50,
-    marginLeft: 60,
-    minHeight: 500,
-    maxScale: 1.5,
-    minScale: 0.5,
-  });
-
-  const { currentMonth, currentYear, days, calendarConfig, setMonth, setYear, setScale } =
+  const { currentMonth, currentYear, zoomLevel, days, calendarConfig, setMonth, setYear, setZoomLevel } =
     useTimelineControls(trip);
 
   const handleZoomIn = () => {
-    const newScale = Math.min(1.5, dimensions.scale + 0.1);
-    updateScale(newScale);
-    setScale(newScale);
+    setZoomLevel(Math.min(4, zoomLevel + 1));
   };
 
   const handleZoomOut = () => {
-    const newScale = Math.max(0.5, dimensions.scale - 0.1);
-    updateScale(newScale);
-    setScale(newScale);
+    setZoomLevel(Math.max(1, zoomLevel - 1));
   };
 
   const handleToday = () => {
@@ -94,76 +78,25 @@ export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
         className="mb-4"
       />
 
-      <div
-        ref={containerRef}
-        className="relative bg-background/50 rounded-lg p-8 overflow-hidden"
-        style={{ height: dimensions.height }}
-      >
-        <div
-          className="w-full h-full origin-top-left"
-          style={{
-            transform: `scale(${dimensions.scale})`,
-            width: `${100 / dimensions.scale}%`,
-            height: `${100 / dimensions.scale}%`,
-          }}
-          key={dimensions.scale}
-        >
-          <ResponsiveCalendar
-            data={days
-              .filter((day) => {
-                const date = new Date(day.date);
-                return date.getFullYear() === currentYear;
-              })
-              .map((day) => ({
-                day: day.date,
-                value: day.value,
-                color: day.color,
-              }))}
-            from={`${currentYear}-01-01`}
-            to={`${currentYear}-12-31`}
-            emptyColor="#f3f4f6"
-            colors={["#e5f6ff", "#93c5fd", "#60a5fa", "#3b82f6", "#2563eb"]}
-            margin={{
-              top: dimensions.marginTop,
-              right: dimensions.marginRight,
-              bottom: dimensions.marginBottom,
-              left: dimensions.marginLeft,
-            }}
-            yearSpacing={40}
-            monthBorderColor="#ffffff"
-            dayBorderWidth={2}
+      <div className="relative bg-background/50 rounded-lg p-8 overflow-hidden w-full h-[500px]">
+        <ResponsiveCalendar
+            data={days.map((day) => ({
+              day: day.date,
+              value: day.value,
+              color: day.color,
+            }))}
+            from={calendarConfig.from}
+            to={calendarConfig.to}
+            emptyColor={calendarConfig.emptyColor}
+            colors={calendarConfig.colors}
+            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+            monthBorderColor={calendarConfig.monthBorderColor}
+            dayBorderWidth={calendarConfig.dayBorderWidth}
             dayBorderColor="#ffffff"
-            daySpacing={3}
-            monthSpacing={40}
-            monthLegendOffset={10}
+            monthLegendOffset={calendarConfig.monthLegendOffset}
+            theme={calendarConfig.theme}
             onClick={(day: CalendarDayData) => {
               if (day.day) onDayClick(day.day);
-            }}
-            theme={{
-              labels: {
-                text: {
-                  fontSize: 14,
-                  fontWeight: 600,
-                  fill: "#374151",
-                },
-              },
-              legends: {
-                text: {
-                  fontSize: 13,
-                  fontWeight: 500,
-                  fill: "#374151",
-                },
-              },
-              tooltip: {
-                container: {
-                  background: "#ffffff",
-                  color: "#374151",
-                  fontSize: "14px",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                  padding: "12px",
-                },
-              },
             }}
             legends={[
               {
@@ -187,7 +120,6 @@ export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
               },
             ]}
           />
-        </div>
       </div>
     </div>
   );
