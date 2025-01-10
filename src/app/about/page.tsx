@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Calendar, CheckSquare, DollarSign, Map, Clock, Bell } from "lucide-react";
+import { Calendar, CheckSquare, DollarSign, Map, Clock, Bell } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "~/components/ui/Button";
@@ -29,7 +29,7 @@ export default function AboutPage() {
             </Text>
             <div className="mt-6 max-w-2xl mx-auto px-6 py-4 rounded-2xl bg-[hsl(28,85%,35%)]/5 backdrop-blur-sm border border-[hsl(28,85%,35%)]/10">
               <Text className="text-lg text-foreground/70 italic">
-                "Tiki tour" (noun) - A New Zealand term for an extensive tour that visits the attractions or points of interest in an area. Originating from Māori culture, it embodies the spirit of exploration and discovery.
+                &ldquo;Tiki tour&rdquo; (noun) - A New Zealand term for an extensive tour that visits the attractions or points of interest in an area. Originating from Māori culture, it embodies the spirit of exploration and discovery.
               </Text>
             </div>
           </motion.div>
