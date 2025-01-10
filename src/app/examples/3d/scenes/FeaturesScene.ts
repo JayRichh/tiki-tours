@@ -2,6 +2,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 
 interface VehicleObject {
   model: THREE.Group;
@@ -27,6 +30,11 @@ export class FeaturesScene {
   private loader: GLTFLoader;
   private textureLoader: THREE.TextureLoader;
   private colorMap: THREE.Texture | null = null;
+  private composer: EffectComposer | null = null;
+  private customPass: ShaderPass | null = null;
+  private customPass2: ShaderPass | null = null;
+  private effectsIntensity = 0;
+  private targetIntensity = 0;
 
   private readonly vehicleFiles = [
     '/assets/ambulance.glb',
@@ -100,10 +108,10 @@ export class FeaturesScene {
   }
 
   private init(): void {
-    // Setup renderer
+    // Setup renderer with transparency
     this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.setClearColor(0x000000, 0); // Fully transparent
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.0;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -135,12 +143,85 @@ export class FeaturesScene {
     rimLight.position.set(0, 5, -10);
     this.scene.add(rimLight);
 
+    // Setup post-processing
+    this.setupPostProcessing();
+
     // Start animation
     this.animate();
 
     // Handle resize
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
+  }
+
+  private setupPostProcessing(): void {
+    this.composer = new EffectComposer(this.renderer);
+    const renderPass = new RenderPass(this.scene, this.camera);
+    renderPass.clear = true; // Ensure background is cleared
+    renderPass.clearAlpha = 0; // Make background transparent
+    this.composer.addPass(renderPass);
+
+    const rippleShader = {
+      uniforms: {
+        tDiffuse: { value: null },
+        time: { value: 0 },
+        intensity: { value: 0 }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform float intensity;
+        uniform sampler2D tDiffuse;
+        varying vec2 vUv;
+        void main() {
+          vec4 base = texture2D(tDiffuse, vUv);
+          float r = base.r + 0.02 * intensity * sin(time + vUv.y * 10.0);
+          float g = base.g + 0.02 * intensity * sin(time + vUv.x * 10.0);
+          float b = base.b + 0.02 * intensity * sin(time - vUv.y * 10.0);
+          gl_FragColor = vec4(r, g, b, base.a);
+        }
+      `
+    };
+
+    const waveShader = {
+      uniforms: {
+        tDiffuse: { value: null },
+        time: { value: 0 },
+        intensity: { value: 0 }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform float intensity;
+        uniform sampler2D tDiffuse;
+        varying vec2 vUv;
+        void main() {
+          vec4 col = texture2D(tDiffuse, vUv);
+          float avg = (col.r + col.g + col.b) / 3.0;
+          float wave = 0.005 * intensity * sin(time * 40.0 + vUv.x * 50.0);
+          col.rgb = mix(col.rgb, vec3(avg), wave);
+          gl_FragColor = vec4(col.rgb, col.a);
+        }
+      `
+    };
+
+    this.customPass = new ShaderPass(rippleShader);
+    this.customPass2 = new ShaderPass(waveShader);
+    
+    this.composer.addPass(this.customPass);
+    this.composer.addPass(this.customPass2);
   }
 
   private async loadVehicles(): Promise<void> {
@@ -162,7 +243,9 @@ export class FeaturesScene {
               roughness: 0.3,
               clearcoat: 0.8,
               clearcoatRoughness: 0.2,
-              envMapIntensity: 1.5
+              envMapIntensity: 1.5,
+              transparent: true,
+              opacity: 0.9 // Slightly transparent vehicles
             });
 
             // Apply texture if available
@@ -217,7 +300,13 @@ export class FeaturesScene {
       this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     };
 
+    const onContextMenu = (event: MouseEvent) => {
+      event.preventDefault();
+      this.targetIntensity = this.targetIntensity === 0 ? 1 : 0;
+    };
+
     this.container.addEventListener('mousemove', onMouseMove);
+    this.container.addEventListener('contextmenu', onContextMenu);
   }
 
   private handleResize = (): void => {
@@ -229,6 +318,9 @@ export class FeaturesScene {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+    if (this.composer) {
+      this.composer.setSize(width, height);
+    }
   };
 
   private animate = (): void => {
@@ -238,6 +330,19 @@ export class FeaturesScene {
     // Update raycaster
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
+    // Smooth intensity transition
+    this.effectsIntensity += (this.targetIntensity - this.effectsIntensity) * 0.05;
+
+    // Update shader uniforms
+    if (this.customPass?.uniforms) {
+      this.customPass.uniforms.time.value = this.time;
+      this.customPass.uniforms.intensity.value = this.effectsIntensity;
+    }
+    if (this.customPass2?.uniforms) {
+      this.customPass2.uniforms.time.value = this.time;
+      this.customPass2.uniforms.intensity.value = this.effectsIntensity;
+    }
+
     // Animate vehicles
     this.vehicles.forEach((vehicle) => {
       // Orbital motion
@@ -245,21 +350,27 @@ export class FeaturesScene {
       const targetX = Math.cos(angle) * vehicle.orbitRadius;
       const targetZ = Math.sin(angle) * vehicle.orbitRadius;
       
-      // Smooth position update with mouse influence
-      vehicle.model.position.x += (targetX + vehicle.mouseInfluence.x - vehicle.model.position.x) * 0.05;
-      vehicle.model.position.y += (2 + Math.sin(this.time + vehicle.orbitOffset) + vehicle.mouseInfluence.y - vehicle.model.position.y) * 0.05;
-      vehicle.model.position.z += (targetZ + vehicle.mouseInfluence.z - vehicle.model.position.z) * 0.05;
+      // LERP for smoother position updates
+      const lerpFactor = 0.02; // Reduced for smoother motion
+      vehicle.model.position.x += (targetX + vehicle.mouseInfluence.x - vehicle.model.position.x) * lerpFactor;
+      
+      // Reduced vertical motion amplitude and smoother transitions
+      const verticalOffset = Math.sin(this.time * 0.3 + vehicle.orbitOffset) * 0.5; // Reduced amplitude and frequency
+      vehicle.model.position.y += (1 + verticalOffset + vehicle.mouseInfluence.y - vehicle.model.position.y) * lerpFactor;
+      
+      vehicle.model.position.z += (targetZ + vehicle.mouseInfluence.z - vehicle.model.position.z) * lerpFactor;
 
-      // Rotation to follow path
+      // Smooth rotation with LERP
       const targetRotation = Math.atan2(
         vehicle.model.position.z - vehicle.basePosition.z,
         vehicle.model.position.x - vehicle.basePosition.x
       );
-      vehicle.model.rotation.y = targetRotation + Math.PI / 2;
+      const currentRotation = vehicle.model.rotation.y;
+      vehicle.model.rotation.y += (targetRotation + Math.PI / 2 - currentRotation) * lerpFactor * 2;
 
-      // Additional floating rotation
-      vehicle.model.rotation.x = Math.sin(this.time * 0.5 + vehicle.orbitOffset) * 0.1;
-      vehicle.model.rotation.z = Math.cos(this.time * 0.3 + vehicle.orbitOffset) * 0.1;
+      // Gentler floating rotation
+      vehicle.model.rotation.x += (Math.sin(this.time * 0.2 + vehicle.orbitOffset) * 0.05 - vehicle.model.rotation.x) * lerpFactor;
+      vehicle.model.rotation.z += (Math.cos(this.time * 0.15 + vehicle.orbitOffset) * 0.05 - vehicle.model.rotation.z) * lerpFactor;
 
       // Mouse interaction
       const intersects = this.raycaster.intersectObject(vehicle.model, true);
@@ -274,7 +385,12 @@ export class FeaturesScene {
     });
 
     this.controls.update();
-    this.renderer.render(this.scene, this.camera);
+    
+    if (this.composer) {
+      this.composer.render();
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
   };
 
   public updateScroll(progress: number): void {
@@ -319,5 +435,9 @@ export class FeaturesScene {
         }
       });
     });
+
+    if (this.composer) {
+      this.composer.dispose();
+    }
   }
 }

@@ -159,19 +159,17 @@ export function FeaturesSection() {
 
   return (
     <section 
-      className="relative overflow-hidden min-h-screen" 
+      className="w-full relative overflow-hidden min-h-screen" 
       ref={containerRef}
-      style={{ perspective: '1000px' }}
     >
-      {/* 3D Scene Background */}
-      <FeaturesSceneComponent className="opacity-30" />
+
 
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/70 to-background/90 backdrop-blur-[2px]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_20%,rgba(0,0,0,0.03)_120%)]" />
       <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.01)_0px,rgba(255,255,255,0.01)_1px,transparent_1px,transparent_12px)]" />
 
-      <div className="relative space-y-24 w-full mx-auto px-6 md:px-8 lg:px-10 max-w-7xl py-24">
+      <div className="relative space-y-24 w-full mx-auto px-6 md:px-8 lg:px-10 max-w-7xl py-24 mt-24">
         <motion.div 
           style={{ opacity, scale }}
           className="space-y-6 text-center"

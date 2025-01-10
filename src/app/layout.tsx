@@ -9,6 +9,7 @@ import { GradientBackground } from "~/components/ui/GradientBackground";
 import { Spinner } from "~/components/ui/Spinner";
 
 import "./globals.css";
+import { FeaturesSceneComponent } from "./examples/3d/components/FeaturesSceneComponent";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -103,6 +104,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="fixed inset-0 w-full min-h-screen z-0 pointer-events-none">
           <GradientBackground />
         </div>
+
+              {/* 3D Scene Background */}
+      <FeaturesSceneComponent />
 
         {/* Navigation */}
         <Suspense fallback={<NavigationLoading />}>

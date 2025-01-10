@@ -57,7 +57,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof testimoni
 export function TestimonialsSection() {
   return (
     <section className="relative overflow-hidden">
-      <div className="space-y-12 py-16 w-full mx-auto">
+      <div className="space-y-12 py-24 w-full mx-auto mb-12">
         <div className="space-y-4 flex flex-col pb-12">
           <h1 className="text-4xl md:text-5xl xl:text-6xl font-bold leading-tight tracking-tight font-bold bg-gradient-to-r from-[hsl(28,85%,35%)] to-[hsl(35,85%,45%)] bg-clip-text text-transparent">
             What Our Users Say

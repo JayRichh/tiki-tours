@@ -8,6 +8,7 @@ import { HeroSection } from "~/components/home/HeroSection";
 import { ScrollToTopButton } from "~/components/home/ScrollToTopButton";
 import { TestimonialsSection } from "~/components/home/TestimonialsSection";
 import { TrustedBySection } from "~/components/home/TrustedBySection";
+import { CTASection } from "~/components/home/CTASection";
 import { Container } from "~/components/ui/Container";
 
 export default function HomePage() {
@@ -20,28 +21,31 @@ export default function HomePage() {
 
   return (
     <div ref={containerRef} className="flex flex-col items-center w-full relative min-h-screen pb-12">
-      <section className="w-full sm:-mt-24 flex justify-center">
+        <div className="absolute w-full min-h-[150vh] bg-gradient-to-b from-background via-background/95 to-background" />
+      
+      <section className="w-full sm:-mt-24 flex justify-center ">
         <Container className="px-6 md:px-8 lg:px-10 max-w-7xl">
           <HeroSection opacity={opacity} scale={scale} y={y} />
         </Container>
       </section>
 
-      <section className="w-full py-10 flex justify-center">
+      <section className="w-full pt-10 flex justify-center pb-0">
         <TrustedBySection />
       </section>
       <ScrollToTopButton />
 
-      <section className="w-full py-6 flex justify-center">
-        <Container className="px-6 md:px-8 lg:px-10 max-w-7xl">
-          <FeaturesSection />
-        </Container>
+      <section className="w-full pb-10 flex justify-center pt-0">
+        <FeaturesSection />
       </section>
-
 
       <section className="w-full py-10 flex justify-center">
         <Container className="px-6 md:px-8 lg:px-10 max-w-7xl">
           <TestimonialsSection />
         </Container>
+      </section>
+
+      <section className="w-full pb-10 flex justify-center">
+        <CTASection />
       </section>
     </div>
   );
