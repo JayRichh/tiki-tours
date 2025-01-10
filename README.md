@@ -3,6 +3,7 @@
 A modern travel planning platform that helps you organize trips, manage timelines, and track expenses - all in one place.
 
 [Visit Tiki Tours](https://tiki.tours)
+![tiki1](https://github.com/user-attachments/assets/fd1b2884-6ee5-4c6e-9005-24749d31fdcf)
 
 ## Features
 
