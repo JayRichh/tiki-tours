@@ -1,7 +1,6 @@
-"use client";
+"use client"; // Ensure client-side rendering if using Next.js or similar frameworks
 
 import { useScroll, useTransform } from "framer-motion";
-
 import { useRef } from "react";
 
 import { CTASection } from "~/components/home/CTASection";
@@ -11,6 +10,7 @@ import { ScrollToTopButton } from "~/components/home/ScrollToTopButton";
 import { TestimonialsSection } from "~/components/home/TestimonialsSection";
 import { TrustedBySection } from "~/components/home/TrustedBySection";
 import { Container } from "~/components/ui/Container";
+import { VideoFeatureSection } from "~/components/home/VideoFeatureSection";
 
 export default function HomePage() {
   const containerRef = useRef(null);
@@ -37,6 +37,10 @@ export default function HomePage() {
         <TrustedBySection />
       </section>
       <ScrollToTopButton />
+
+      <section className="w-full pb-10 flex justify-center pt-0">
+        <VideoFeatureSection />
+      </section>
 
       <section className="w-full pb-10 flex justify-center pt-0">
         <FeaturesSection />
