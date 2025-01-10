@@ -1,23 +1,26 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+
 import { useParams } from "next/navigation";
-import { Trip, Activity, KeyEvent, Deadline } from "~/types/trips";
-import { tripService } from "~/services/trips";
-import { Container } from "~/components/ui/Container";
+
 import { Card } from "~/components/ui/Card";
-import { Text } from "~/components/ui/Text";
+import { Container } from "~/components/ui/Container";
 import { Spinner } from "~/components/ui/Spinner";
 import { TabGroup } from "~/components/ui/TabGroup";
-import { TripOverview } from "~/app/trips/components/detail/TripOverview";
-import { TripTimeline } from "~/app/trips/components/detail/TripTimeline";
-import { TripBudget } from "~/app/trips/components/detail/TripBudget";
-import { TripActivities } from "~/app/trips/components/detail/TripActivities";
-import { TripPlanning } from "~/app/trips/components/detail/TripPlanning";
-import { TripChecklists } from "~/app/trips/components/detail/TripChecklists";
-import { TripReports } from "~/app/trips/components/detail/TripReports";
-import { TripDashboard } from "~/app/trips/components/detail/TripDashboard";
+import { Text } from "~/components/ui/Text";
+
 import { TripBreadcrumb } from "~/app/trips/components/TripBreadcrumb";
+import { TripActivities } from "~/app/trips/components/detail/TripActivities";
+import { TripBudget } from "~/app/trips/components/detail/TripBudget";
+import { TripChecklists } from "~/app/trips/components/detail/TripChecklists";
+import { TripDashboard } from "~/app/trips/components/detail/TripDashboard";
+import { TripOverview } from "~/app/trips/components/detail/TripOverview";
+import { TripPlanning } from "~/app/trips/components/detail/TripPlanning";
+import { TripReports } from "~/app/trips/components/detail/TripReports";
+import { TripTimeline } from "~/app/trips/components/detail/TripTimeline";
+import { tripService } from "~/services/trips";
+import { Activity, Deadline, KeyEvent, Trip } from "~/types/trips";
 
 interface TabContentHandlers {
   handleUpdateTrip: (updates: Partial<Trip>) => Promise<void>;
@@ -39,11 +42,7 @@ const renderTabContent = (
 ) => ({
   overview: (
     <div className="w-full flex flex-col flex-1">
-      <TripOverview 
-        trip={trip} 
-        onUpdate={handlers.handleUpdateTrip}
-        onTabChange={onTabChange}
-      />
+      <TripOverview trip={trip} onUpdate={handlers.handleUpdateTrip} onTabChange={onTabChange} />
     </div>
   ),
   dashboard: (
@@ -81,35 +80,33 @@ const renderTabContent = (
   ),
   checklists: (
     <div className="w-full flex flex-col flex-1">
-      <TripChecklists
-        trip={trip}
-        onUpdate={handlers.handleUpdateTrip}
-      />
+      <TripChecklists trip={trip} onUpdate={handlers.handleUpdateTrip} />
     </div>
   ),
   reports: (
     <div className="w-full flex flex-col flex-1">
       <TripReports trip={trip} />
     </div>
-  )
+  ),
 });
 
-const getTabs = (
-  trip: Trip,
-  content: ReturnType<typeof renderTabContent>
-) => [
+const getTabs = (trip: Trip, content: ReturnType<typeof renderTabContent>) => [
   { id: "overview", label: "Overview", content: content.overview },
   { id: "dashboard", label: "Dashboard", content: content.dashboard },
-  { id: "timeline", label: "Timeline & Budget", content: (
-    <div className="space-y-8 w-full flex flex-col flex-1">
-      {content.timeline}
-      <TripBudget trip={trip} />
-    </div>
-  ) },
+  {
+    id: "timeline",
+    label: "Timeline & Budget",
+    content: (
+      <div className="space-y-8 w-full flex flex-col flex-1">
+        {content.timeline}
+        <TripBudget trip={trip} />
+      </div>
+    ),
+  },
   { id: "activities", label: "Activities", content: content.activities },
   { id: "planning", label: "Planning", content: content.planning },
   { id: "checklists", label: "Checklists", content: content.checklists },
-  { id: "reports", label: "Reports", content: content.reports }
+  { id: "reports", label: "Reports", content: content.reports },
 ];
 
 export default function TripDetailPage() {
@@ -125,9 +122,20 @@ export default function TripDetailPage() {
 
       // Format: #tab/dialog/action/params
       const [tab, dialog, action, ...params] = hash.split("/");
-      
+
       // Set active tab if it exists
-      if (tab && ["overview", "dashboard", "timeline", "activities", "planning", "checklists", "reports"].includes(tab)) {
+      if (
+        tab &&
+        [
+          "overview",
+          "dashboard",
+          "timeline",
+          "activities",
+          "planning",
+          "checklists",
+          "reports",
+        ].includes(tab)
+      ) {
         setActiveTab(tab);
       }
 
@@ -154,7 +162,7 @@ export default function TripDetailPage() {
   useEffect(() => {
     const currentHash = window.location.hash.slice(1);
     const [, dialog, action, ...params] = currentHash.split("/");
-    
+
     let newHash = `#${activeTab}`;
     if (dialog && action) {
       newHash += `/${dialog}/${action}`;
@@ -162,7 +170,7 @@ export default function TripDetailPage() {
         newHash += `/${params.join("/")}`;
       }
     }
-    
+
     if (window.location.hash !== newHash) {
       window.history.pushState(null, "", newHash);
     }
@@ -172,7 +180,7 @@ export default function TripDetailPage() {
   useEffect(() => {
     const loadTrip = async () => {
       if (typeof slug !== "string") return;
-      
+
       try {
         const tripData = await tripService.getTrip(slug);
         setTrip(tripData);
@@ -187,95 +195,130 @@ export default function TripDetailPage() {
   }, [slug]);
 
   // Trip Updates
-  const handleUpdateTrip = useCallback(async (updates: Partial<Trip>) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.updateTrip(trip.slug, updates);
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleUpdateTrip = useCallback(
+    async (updates: Partial<Trip>) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.updateTrip(trip.slug, updates);
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
   // Activities
-  const handleAddActivity = useCallback(async (activity: Omit<Activity, "id">) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.updateTrip(trip.slug, {
-      activities: [...(trip.activities || []), { ...activity, id: crypto.randomUUID(), tripId: trip.id }]
-    });
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleAddActivity = useCallback(
+    async (activity: Omit<Activity, "id">) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.updateTrip(trip.slug, {
+        activities: [
+          ...(trip.activities || []),
+          { ...activity, id: crypto.randomUUID(), tripId: trip.id },
+        ],
+      });
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
-  const handleUpdateActivity = useCallback(async (activityId: string, updates: Partial<Activity>) => {
-    if (!trip) return;
-    const updatedActivities = trip.activities.map(activity =>
-      activity.id === activityId ? { ...activity, ...updates } : activity
-    );
-    const updatedTrip = await tripService.updateTrip(trip.slug, { activities: updatedActivities });
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleUpdateActivity = useCallback(
+    async (activityId: string, updates: Partial<Activity>) => {
+      if (!trip) return;
+      const updatedActivities = trip.activities.map((activity) =>
+        activity.id === activityId ? { ...activity, ...updates } : activity
+      );
+      const updatedTrip = await tripService.updateTrip(trip.slug, {
+        activities: updatedActivities,
+      });
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
-  const handleDeleteActivity = useCallback(async (activityId: string) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.updateTrip(trip.slug, {
-      activities: trip.activities.filter(activity => activity.id !== activityId)
-    });
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleDeleteActivity = useCallback(
+    async (activityId: string) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.updateTrip(trip.slug, {
+        activities: trip.activities.filter((activity) => activity.id !== activityId),
+      });
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
   // Key Events
-  const handleAddKeyEvent = useCallback(async (event: Omit<KeyEvent, "id">) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.addKeyEvent(trip.slug, event);
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleAddKeyEvent = useCallback(
+    async (event: Omit<KeyEvent, "id">) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.addKeyEvent(trip.slug, event);
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
-  const handleUpdateKeyEvent = useCallback(async (eventId: string, updates: Partial<KeyEvent>) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.updateKeyEvent(trip.slug, eventId, updates);
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleUpdateKeyEvent = useCallback(
+    async (eventId: string, updates: Partial<KeyEvent>) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.updateKeyEvent(trip.slug, eventId, updates);
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
-  const handleDeleteKeyEvent = useCallback(async (eventId: string) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.deleteKeyEvent(trip.slug, eventId);
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleDeleteKeyEvent = useCallback(
+    async (eventId: string) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.deleteKeyEvent(trip.slug, eventId);
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
   // Deadlines
-  const handleAddDeadline = useCallback(async (deadline: Omit<Deadline, "id">) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.addDeadline(trip.slug, deadline);
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleAddDeadline = useCallback(
+    async (deadline: Omit<Deadline, "id">) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.addDeadline(trip.slug, deadline);
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
-  const handleUpdateDeadline = useCallback(async (deadlineId: string, updates: Partial<Deadline>) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.updateDeadline(trip.slug, deadlineId, updates);
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleUpdateDeadline = useCallback(
+    async (deadlineId: string, updates: Partial<Deadline>) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.updateDeadline(trip.slug, deadlineId, updates);
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
-  const handleDeleteDeadline = useCallback(async (deadlineId: string) => {
-    if (!trip) return;
-    const updatedTrip = await tripService.deleteDeadline(trip.slug, deadlineId);
-    if (updatedTrip) {
-      setTrip(updatedTrip);
-    }
-  }, [trip]);
+  const handleDeleteDeadline = useCallback(
+    async (deadlineId: string) => {
+      if (!trip) return;
+      const updatedTrip = await tripService.deleteDeadline(trip.slug, deadlineId);
+      if (updatedTrip) {
+        setTrip(updatedTrip);
+      }
+    },
+    [trip]
+  );
 
   if (loading) {
     return (
@@ -309,12 +352,11 @@ export default function TripDetailPage() {
     handleDeleteKeyEvent,
     handleAddDeadline,
     handleUpdateDeadline,
-    handleDeleteDeadline
+    handleDeleteDeadline,
   };
 
   const tabContent = renderTabContent(trip, handlers, setActiveTab);
   const tabs = getTabs(trip, tabContent);
-
 
   return (
     <Container size="full" className="pb-8 flex flex-col flex-1">

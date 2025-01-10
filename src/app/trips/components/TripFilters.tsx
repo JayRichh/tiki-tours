@@ -1,10 +1,13 @@
 "use client";
 
+import { Plus } from "lucide-react";
+
 import { Button } from "~/components/ui/Button";
 import { Select } from "~/components/ui/Select";
+
 import { TripStatus } from "~/types/trips";
+
 import { statusOptions } from "../constants";
-import { Plus } from "lucide-react";
 
 interface TripFiltersProps {
   status?: TripStatus;
@@ -24,11 +27,7 @@ export function TripFilters({ status, onStatusChange, onCreateNew }: TripFilters
           clearable
         />
       </div>
-      <Button
-        variant="primary"
-        leftIcon={<Plus className="h-4 w-4" />}
-        onClick={onCreateNew}
-      >
+      <Button variant="primary" leftIcon={<Plus className="h-4 w-4" />} onClick={onCreateNew}>
         New Trip
       </Button>
     </div>

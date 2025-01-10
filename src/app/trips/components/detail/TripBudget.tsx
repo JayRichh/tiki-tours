@@ -1,13 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
-import { Card, CardHeader, CardContent } from "~/components/ui/Card";
-import { Text } from "~/components/ui/Text";
-import { Progress } from "~/components/ui/Progress";
-import { Trip } from "~/types/trips";
-import { ResponsiveTreeMap } from "@nivo/treemap";
 import { ResponsiveLine } from "@nivo/line";
+import { ResponsiveTreeMap } from "@nivo/treemap";
 import { DollarSign } from "lucide-react";
+
+import { useMemo } from "react";
+
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
+import { Progress } from "~/components/ui/Progress";
+import { Text } from "~/components/ui/Text";
+
+import { Trip } from "~/types/trips";
 
 interface TripBudgetProps {
   trip: Trip;
@@ -17,21 +20,18 @@ export function TripBudget({ trip }: TripBudgetProps) {
   // Calculate spending by category
   const categoryData = useMemo(() => {
     const categories = new Map<string, number>();
-    
+
     trip.activities?.forEach((activity) => {
       const category = activity.category || "Other";
-      categories.set(
-        category,
-        (categories.get(category) || 0) + activity.activityCost
-      );
+      categories.set(category, (categories.get(category) || 0) + activity.activityCost);
     });
 
     return {
       name: "expenses",
       children: Array.from(categories.entries()).map(([name, value]) => ({
         name,
-        value
-      }))
+        value,
+      })),
     };
   }, [trip]);
 
@@ -40,17 +40,19 @@ export function TripBudget({ trip }: TripBudgetProps) {
     if (!trip.activities?.length) {
       // Return default data point if no activities
       const today = new Date().toISOString().split("T")[0];
-      return [{
-        id: "cumulative-spending",
-        data: [{x: today, y: 0}]
-      }];
+      return [
+        {
+          id: "cumulative-spending",
+          data: [{ x: today, y: 0 }],
+        },
+      ];
     }
 
     const dailySpending = new Map<string, number>();
-    
+
     // Sort activities by date first
-    const sortedActivities = [...trip.activities].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
+    const sortedActivities = [...trip.activities].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
 
     // Get start and end dates
@@ -68,29 +70,26 @@ export function TripBudget({ trip }: TripBudgetProps) {
     // Calculate spending for each date
     sortedActivities.forEach((activity) => {
       const date = new Date(activity.date).toISOString().split("T")[0];
-      dailySpending.set(
-        date,
-        (dailySpending.get(date) || 0) + activity.activityCost
-      );
+      dailySpending.set(date, (dailySpending.get(date) || 0) + activity.activityCost);
     });
 
     // Calculate cumulative spending for all dates
     let runningTotal = 0;
-    return [{
-      id: "cumulative-spending",
-      data: allDates.map(date => {
-        runningTotal += dailySpending.get(date) || 0;
-        return {
-          x: date,
-          y: runningTotal
-        };
-      })
-    }];
+    return [
+      {
+        id: "cumulative-spending",
+        data: allDates.map((date) => {
+          runningTotal += dailySpending.get(date) || 0;
+          return {
+            x: date,
+            y: runningTotal,
+          };
+        }),
+      },
+    ];
   }, [trip]);
 
-  const spentPercentage = trip.spentSoFar
-    ? (trip.spentSoFar / trip.tripBudget) * 100
-    : 0;
+  const spentPercentage = trip.spentSoFar ? (trip.spentSoFar / trip.tripBudget) * 100 : 0;
 
   return (
     <Card>
@@ -110,7 +109,9 @@ export function TripBudget({ trip }: TripBudgetProps) {
           {/* Overall Budget Progress */}
           <div className="grid grid-cols-1 gap-2 w-full">
             <div className="flex justify-between text-sm">
-              <Text variant="body-sm" color="secondary">Total Spent</Text>
+              <Text variant="body-sm" color="secondary">
+                Total Spent
+              </Text>
               <Text variant="body-sm" color="secondary">
                 ${trip.spentSoFar?.toLocaleString() || 0} of ${trip.tripBudget.toLocaleString()}
               </Text>
@@ -179,7 +180,7 @@ export function TripBudget({ trip }: TripBudgetProps) {
                   tickRotation: 0,
                   legend: "Amount Spent",
                   legendOffset: -60,
-                  legendPosition: "middle"
+                  legendPosition: "middle",
                 }}
                 axisBottom={{
                   format: "%b %d",
@@ -188,7 +189,7 @@ export function TripBudget({ trip }: TripBudgetProps) {
                   tickRotation: -45,
                   legend: "Date",
                   legendOffset: 60,
-                  legendPosition: "middle"
+                  legendPosition: "middle",
                 }}
                 enablePoints={true}
                 pointSize={8}
@@ -205,25 +206,25 @@ export function TripBudget({ trip }: TripBudgetProps) {
                     legend: {
                       text: {
                         fontSize: 14,
-                        fontWeight: 600
-                      }
+                        fontWeight: 600,
+                      },
                     },
                     ticks: {
                       text: {
                         fontSize: 12,
-                        fontWeight: 500
+                        fontWeight: 500,
                       },
                     },
                   },
                   tooltip: {
                     container: {
-                      background: '#ffffff',
-                      padding: '12px',
-                      borderRadius: '4px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      fontSize: '14px'
-                    }
-                  }
+                      background: "#ffffff",
+                      padding: "12px",
+                      borderRadius: "4px",
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                      fontSize: "14px",
+                    },
+                  },
                 }}
                 colors={["#60a5fa"]}
               />

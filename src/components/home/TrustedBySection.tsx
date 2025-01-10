@@ -1,7 +1,9 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
+
 import { useEffect, useRef, useState } from "react";
+
 import Image from "next/image";
 
 interface Brand {
@@ -48,7 +50,7 @@ const brands: Brand[] = [
   { name: "Expedia", domain: "expedia.com" },
   { name: "Booking", domain: "booking.com" },
   { name: "Kayak", domain: "kayak.com" },
-  { name: "Skyscanner", domain: "skyscanner.com" }
+  { name: "Skyscanner", domain: "skyscanner.com" },
 ];
 
 function ScrollingRow({
@@ -73,7 +75,7 @@ function ScrollingRow({
 
   // Handle image load errors
   const handleImageError = (domain: string) => {
-    setFailedLogos(prev => new Set([...prev, domain]));
+    setFailedLogos((prev) => new Set([...prev, domain]));
   };
 
   // Calculate the width of one set of brands
@@ -178,7 +180,7 @@ function ScrollingRow({
 
 export function TrustedBySection() {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}

@@ -1,15 +1,19 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { Card, CardHeader, CardContent } from "~/components/ui/Card";
-import { Text } from "~/components/ui/Text";
-import { Button } from "~/components/ui/Button";
-import { Badge } from "~/components/ui/Badge";
-import { Modal } from "~/components/ui/Modal";
-import { Trip, Activity } from "~/types/trips";
 import { ResponsivePie } from "@nivo/pie";
 import { ResponsiveSankey } from "@nivo/sankey";
-import { Plus, MapPin, Clock, DollarSign, Edit2, Trash2 } from "lucide-react";
+import { Clock, DollarSign, Edit2, MapPin, Plus, Trash2 } from "lucide-react";
+
+import { useEffect, useMemo, useState } from "react";
+
+import { Badge } from "~/components/ui/Badge";
+import { Button } from "~/components/ui/Button";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
+import { Modal } from "~/components/ui/Modal";
+import { Text } from "~/components/ui/Text";
+
+import { Activity, Trip } from "~/types/trips";
+
 import { ActivityForm } from "./ActivityForm";
 
 interface TripActivitiesProps {
@@ -19,11 +23,11 @@ interface TripActivitiesProps {
   onAddActivity?: (activity: Omit<Activity, "id">) => void;
 }
 
-export function TripActivities({ 
+export function TripActivities({
   trip,
   onUpdateActivity,
   onDeleteActivity,
-  onAddActivity
+  onAddActivity,
 }: TripActivitiesProps) {
   // Get dialog state from URL hash
   const [dialogState, setDialogState] = useState<{
@@ -34,7 +38,7 @@ export function TripActivities({
 
   const selectedActivity = useMemo(() => {
     if (dialogState.id) {
-      return trip.activities.find(a => a.id === dialogState.id);
+      return trip.activities.find((a) => a.id === dialogState.id);
     }
     return undefined;
   }, [dialogState.id, trip.activities]);
@@ -62,7 +66,7 @@ export function TripActivities({
         setDialogState({
           type: "activity",
           action: action as "new" | "edit" | "delete",
-          id: param && !param.startsWith("today=") ? param : undefined
+          id: param && !param.startsWith("today=") ? param : undefined,
         });
       }
     };
@@ -73,14 +77,18 @@ export function TripActivities({
   }, []);
 
   // Helper to update dialog state and URL hash
-  const updateDialogState = (type: typeof dialogState.type, action: typeof dialogState.action, id?: string) => {
+  const updateDialogState = (
+    type: typeof dialogState.type,
+    action: typeof dialogState.action,
+    id?: string
+  ) => {
     if (!type || !action) {
       window.history.pushState(null, "", window.location.pathname + "#activities");
       setDialogState({ type: null, action: null });
       return;
     }
 
-    const hash = `#activities/${type}/${action}${id ? `/${id}` : ''}`;
+    const hash = `#activities/${type}/${action}${id ? `/${id}` : ""}`;
     window.history.pushState(null, "", hash);
     setDialogState({ type, action, id });
   };
@@ -88,18 +96,15 @@ export function TripActivities({
   // Activity type distribution
   const typeDistribution = useMemo(() => {
     const types = new Map<string, number>();
-    
+
     trip.activities?.forEach((activity) => {
-      types.set(
-        activity.type,
-        (types.get(activity.type) || 0) + 1
-      );
+      types.set(activity.type, (types.get(activity.type) || 0) + 1);
     });
 
     return Array.from(types.entries()).map(([id, value]) => ({
       id,
       label: id.charAt(0).toUpperCase() + id.slice(1),
-      value
+      value,
     }));
   }, [trip.activities]);
 
@@ -110,14 +115,12 @@ export function TripActivities({
 
     trip.activities?.forEach((activity, index, arr) => {
       locations.add(activity.location);
-      
+
       if (index > 0) {
         const source = arr[index - 1].location;
         const target = activity.location;
-        
-        const existingLink = links.find(
-          link => link.source === source && link.target === target
-        );
+
+        const existingLink = links.find((link) => link.source === source && link.target === target);
 
         if (existingLink) {
           existingLink.value += 1;
@@ -128,8 +131,8 @@ export function TripActivities({
     });
 
     return {
-      nodes: Array.from(locations).map(id => ({ id })),
-      links
+      nodes: Array.from(locations).map((id) => ({ id })),
+      links,
     };
   }, [trip.activities]);
 
@@ -190,8 +193,8 @@ export function TripActivities({
                           activity.bookingStatus === "completed"
                             ? "success"
                             : activity.bookingStatus === "booked"
-                            ? "info"
-                            : "warning"
+                              ? "info"
+                              : "warning"
                         }
                       >
                         {activity.bookingStatus}
@@ -274,12 +277,17 @@ export function TripActivities({
 
       {/* Activity Form Modal */}
       <Modal
-        isOpen={dialogState.type === "activity" && (dialogState.action === "new" || dialogState.action === "edit")}
+        isOpen={
+          dialogState.type === "activity" &&
+          (dialogState.action === "new" || dialogState.action === "edit")
+        }
         onClose={() => updateDialogState(null, null)}
         title={dialogState.action === "edit" ? "Edit Activity" : "Add Activity"}
       >
         <ActivityForm
-          activity={selectedActivity || (todayDate ? { date: todayDate } as Partial<Activity> : undefined)}
+          activity={
+            selectedActivity || (todayDate ? ({ date: todayDate } as Partial<Activity>) : undefined)
+          }
           onSubmit={(data: Omit<Activity, "id">) => {
             if (dialogState.action === "edit" && dialogState.id) {
               onUpdateActivity?.(dialogState.id, data);
@@ -303,10 +311,7 @@ export function TripActivities({
             Are you sure you want to delete {selectedActivity?.activityName}?
           </Text>
           <div className="flex justify-end gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => updateDialogState(null, null)}
-            >
+            <Button variant="ghost" onClick={() => updateDialogState(null, null)}>
               Cancel
             </Button>
             <Button

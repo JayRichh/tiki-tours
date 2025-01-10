@@ -1,15 +1,31 @@
 "use client";
 
+import {
+  AlertCircle,
+  Calendar,
+  Clock,
+  DollarSign,
+  Edit2,
+  FileText,
+  Globe,
+  List,
+  MapPin,
+  Plus,
+  Users,
+} from "lucide-react";
+
 import { useState } from "react";
-import { Card, CardHeader, CardContent } from "~/components/ui/Card";
-import { Modal } from "~/components/ui/Modal";
+
 import { Badge } from "~/components/ui/Badge";
-import { Text } from "~/components/ui/Text";
 import { Button } from "~/components/ui/Button";
-import { Trip } from "~/types/trips";
-import { statusColors } from "../../constants";
-import { Globe, Calendar, Users, DollarSign, MapPin, Clock, Edit2, Plus, List, FileText, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
+import { Modal } from "~/components/ui/Modal";
 import { Progress } from "~/components/ui/Progress";
+import { Text } from "~/components/ui/Text";
+
+import { Trip } from "~/types/trips";
+
+import { statusColors } from "../../constants";
 
 interface TripOverviewProps {
   trip: Trip;
@@ -17,25 +33,24 @@ interface TripOverviewProps {
   onTabChange?: (tab: string) => void;
 }
 
-
 export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     const updates: Partial<Trip> = {
       destination: formData.get("destination") as string,
       startDate: formData.get("startDate") as string,
       endDate: formData.get("endDate") as string,
       tripBudget: Number(formData.get("tripBudget")),
-      tripDetails: formData.get("tripDetails") as string || undefined,
+      tripDetails: (formData.get("tripDetails") as string) || undefined,
       numberOfTravelers: Number(formData.get("numberOfTravelers")) || undefined,
-      travelMode: formData.get("travelMode") as string || undefined,
+      travelMode: (formData.get("travelMode") as string) || undefined,
       flexibleDates: formData.get("flexibleDates") === "true",
       relocationPlan: formData.get("relocationPlan") === "true",
-      holidayPreferences: formData.get("holidayPreferences")?.toString().split(",").filter(Boolean)
+      holidayPreferences: formData.get("holidayPreferences")?.toString().split(",").filter(Boolean),
     };
 
     onUpdate(updates);
@@ -51,20 +66,28 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
         title={
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Text variant="h2" gradient="primary" balance>{trip.destination}</Text>
+              <Text variant="h2" gradient="primary" balance>
+                {trip.destination}
+              </Text>
               <div className="flex items-center gap-2">
-                <Badge variant="solid" color="primary" className="text-sm capitalize">{trip.status}</Badge>
+                <Badge variant="solid" color="primary" className="text-sm capitalize">
+                  {trip.status}
+                </Badge>
                 {trip.relocationPlan && (
-                  <Badge variant="solid" color="info" className="text-sm">Relocation</Badge>
+                  <Badge variant="solid" color="info" className="text-sm">
+                    Relocation
+                  </Badge>
                 )}
                 {trip.flexibleDates && (
-                  <Badge variant="solid" color="success" className="text-sm">Flexible Dates</Badge>
+                  <Badge variant="solid" color="success" className="text-sm">
+                    Flexible Dates
+                  </Badge>
                 )}
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               leftIcon={<Edit2 className="h-4 w-4" />}
               onClick={() => setIsEditModalOpen(true)}
             />
@@ -89,7 +112,7 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             variant="outline"
             className="flex flex-col items-center gap-2 h-auto py-4"
             onClick={() => {
-              const today = new Date().toISOString().split('T')[0];
+              const today = new Date().toISOString().split("T")[0];
               window.location.hash = `activities/activity/new/today=${today}`;
               onTabChange?.("activities");
             }}
@@ -101,7 +124,7 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             variant="outline"
             className="flex flex-col items-center gap-2 h-auto py-4"
             onClick={() => {
-              const today = new Date().toISOString().split('T')[0];
+              const today = new Date().toISOString().split("T")[0];
               window.location.hash = `planning/event/new/today=${today}`;
               onTabChange?.("planning");
             }}
@@ -137,7 +160,7 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             onClick={() => {
               const nextWeek = new Date();
               nextWeek.setDate(nextWeek.getDate() + 7);
-              window.location.hash = `planning/deadline/new/date=${nextWeek.toISOString().split('T')[0]}`;
+              window.location.hash = `planning/deadline/new/date=${nextWeek.toISOString().split("T")[0]}`;
               onTabChange?.("planning");
             }}
           >
@@ -151,7 +174,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
           <div className="flex items-center gap-3">
             <Calendar className="h-5 w-5 text-primary" />
             <div>
-              <Text variant="body-sm" color="secondary" className="mb-1">Duration</Text>
+              <Text variant="body-sm" color="secondary" className="mb-1">
+                Duration
+              </Text>
               <Text variant="body-lg" weight="medium">
                 {duration} days
               </Text>
@@ -161,7 +186,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
           <div className="flex items-center gap-3">
             <Clock className="h-5 w-5 text-primary" />
             <div>
-              <Text variant="body-sm" color="secondary" className="mb-1">Dates</Text>
+              <Text variant="body-sm" color="secondary" className="mb-1">
+                Dates
+              </Text>
               <Text variant="body-lg" weight="medium">
                 {startDate.toLocaleDateString()} - {endDate.toLocaleDateString()}
               </Text>
@@ -171,12 +198,15 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
           <div className="flex items-center gap-3">
             <DollarSign className="h-5 w-5 text-primary" />
             <div>
-              <Text variant="body-sm" color="secondary" className="mb-1">Budget</Text>
+              <Text variant="body-sm" color="secondary" className="mb-1">
+                Budget
+              </Text>
               <Text variant="body-lg" weight="medium">
                 ${trip.tripBudget.toLocaleString()}
                 {trip.spentSoFar && (
                   <span className="text-foreground-secondary">
-                    {" "}(${trip.spentSoFar.toLocaleString()} spent)
+                    {" "}
+                    (${trip.spentSoFar.toLocaleString()} spent)
                   </span>
                 )}
               </Text>
@@ -187,7 +217,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             <div className="flex items-center gap-3">
               <Users className="h-5 w-5 text-primary" />
               <div>
-                <Text variant="body-sm" color="secondary" className="mb-1">Travelers</Text>
+                <Text variant="body-sm" color="secondary" className="mb-1">
+                  Travelers
+                </Text>
                 <Text variant="body-lg" weight="medium">
                   {trip.numberOfTravelers} people
                 </Text>
@@ -199,7 +231,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             <div className="flex items-center gap-3">
               <Globe className="h-5 w-5 text-primary" />
               <div>
-                <Text variant="body-sm" color="secondary" className="mb-1">Travel Mode</Text>
+                <Text variant="body-sm" color="secondary" className="mb-1">
+                  Travel Mode
+                </Text>
                 <Text variant="body-lg" weight="medium">
                   {trip.travelMode}
                 </Text>
@@ -213,7 +247,11 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
           {/* Trip Details */}
           <Card className="bg-background/50">
             <CardHeader
-              title={<Text variant="h4" gradient="primary">Trip Details</Text>}
+              title={
+                <Text variant="h4" gradient="primary">
+                  Trip Details
+                </Text>
+              }
             />
             <CardContent>
               <Text variant="body-lg" color="secondary">
@@ -221,7 +259,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
               </Text>
               {trip.holidayPreferences && trip.holidayPreferences.length > 0 && (
                 <div className="mt-4">
-                  <Text variant="body-sm" color="secondary" className="mb-2">Preferences</Text>
+                  <Text variant="body-sm" color="secondary" className="mb-2">
+                    Preferences
+                  </Text>
                   <div className="flex flex-wrap gap-2">
                     {trip.holidayPreferences.map((pref) => (
                       <Badge key={pref} variant="secondary">
@@ -237,13 +277,19 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
           {/* Progress Overview */}
           <Card className="bg-background/50">
             <CardHeader
-              title={<Text variant="h4" gradient="primary">Progress</Text>}
+              title={
+                <Text variant="h4" gradient="primary">
+                  Progress
+                </Text>
+              }
             />
             <CardContent className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
-                <Text variant="body" color="secondary">Budget Used</Text>
-                <Text variant="body" weight="medium">
+                  <Text variant="body" color="secondary">
+                    Budget Used
+                  </Text>
+                  <Text variant="body" weight="medium">
                     {Math.round(((trip.spentSoFar || 0) / trip.tripBudget) * 100)}%
                   </Text>
                 </div>
@@ -251,18 +297,24 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
               </div>
               <div>
                 <div className="flex justify-between mb-2">
-                <Text variant="body" color="secondary">Time Until Trip</Text>
-                <Text variant="body" weight="medium">
-                    {Math.ceil((new Date(trip.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
+                  <Text variant="body" color="secondary">
+                    Time Until Trip
+                  </Text>
+                  <Text variant="body" weight="medium">
+                    {Math.ceil(
+                      (new Date(trip.startDate).getTime() - new Date().getTime()) /
+                        (1000 * 60 * 60 * 24)
+                    )}{" "}
+                    days
                   </Text>
                 </div>
-                <Progress 
-                  value={
-                    Math.min(100,
-                      ((new Date().getTime() - new Date(trip.startDate).getTime()) /
-                      (new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime())) * 100
-                    )
-                  } 
+                <Progress
+                  value={Math.min(
+                    100,
+                    ((new Date().getTime() - new Date(trip.startDate).getTime()) /
+                      (new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime())) *
+                      100
+                  )}
                 />
               </div>
             </CardContent>
@@ -279,7 +331,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <Text variant="body-sm" color="secondary">Destination</Text>
+              <Text variant="body-sm" color="secondary">
+                Destination
+              </Text>
               <input
                 type="text"
                 name="destination"
@@ -291,7 +345,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Text variant="body-sm" color="secondary">Start Date</Text>
+                <Text variant="body-sm" color="secondary">
+                  Start Date
+                </Text>
                 <input
                   type="date"
                   name="startDate"
@@ -301,7 +357,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
                 />
               </div>
               <div>
-                <Text variant="body-sm" color="secondary">End Date</Text>
+                <Text variant="body-sm" color="secondary">
+                  End Date
+                </Text>
                 <input
                   type="date"
                   name="endDate"
@@ -313,7 +371,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             </div>
 
             <div>
-              <Text variant="body-sm" color="secondary">Budget</Text>
+              <Text variant="body-sm" color="secondary">
+                Budget
+              </Text>
               <input
                 type="number"
                 name="tripBudget"
@@ -324,7 +384,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
             </div>
 
             <div>
-              <Text variant="body-sm" color="secondary">Details</Text>
+              <Text variant="body-sm" color="secondary">
+                Details
+              </Text>
               <textarea
                 name="tripDetails"
                 defaultValue={trip.tripDetails}
@@ -335,7 +397,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Text variant="body-sm" color="secondary">Number of Travelers</Text>
+                <Text variant="body-sm" color="secondary">
+                  Number of Travelers
+                </Text>
                 <input
                   type="number"
                   name="numberOfTravelers"
@@ -344,7 +408,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
                 />
               </div>
               <div>
-                <Text variant="body-sm" color="secondary">Travel Mode</Text>
+                <Text variant="body-sm" color="secondary">
+                  Travel Mode
+                </Text>
                 <input
                   type="text"
                   name="travelMode"
@@ -363,7 +429,9 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
                     defaultChecked={trip.flexibleDates}
                     value="true"
                   />
-                  <Text variant="body-sm" color="secondary">Flexible Dates</Text>
+                  <Text variant="body-sm" color="secondary">
+                    Flexible Dates
+                  </Text>
                 </label>
               </div>
               <div>
@@ -374,13 +442,17 @@ export function TripOverview({ trip, onUpdate, onTabChange }: TripOverviewProps)
                     defaultChecked={trip.relocationPlan}
                     value="true"
                   />
-                  <Text variant="body-sm" color="secondary">Relocation Plan</Text>
+                  <Text variant="body-sm" color="secondary">
+                    Relocation Plan
+                  </Text>
                 </label>
               </div>
             </div>
 
             <div>
-              <Text variant="body-sm" color="secondary">Holiday Preferences (comma-separated)</Text>
+              <Text variant="body-sm" color="secondary">
+                Holiday Preferences (comma-separated)
+              </Text>
               <input
                 type="text"
                 name="holidayPreferences"

@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, CheckSquare, DollarSign, Map, Clock, Bell } from "lucide-react";
+import { Bell, Calendar, CheckSquare, Clock, DollarSign, Map } from "lucide-react";
+
 import Link from "next/link";
 
 import { Button } from "~/components/ui/Button";
@@ -15,7 +16,7 @@ export default function AboutPage() {
       <section className="w-full min-h-[60vh] flex items-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
         <Container className="relative px-6 md:px-8 lg:px-10 max-w-5xl py-24">
-          <motion.div 
+          <motion.div
             className="text-center space-y-6"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -24,12 +25,18 @@ export default function AboutPage() {
             <h1 className="text-4xl md:text-5xl xl:text-6xl font-bold leading-tight tracking-tight bg-gradient-to-r from-[hsl(28,85%,35%)] to-[hsl(35,85%,45%)] bg-clip-text text-transparent">
               Your Travel Planner
             </h1>
-            <Text variant="body-lg" className="text-foreground/80 max-w-2xl mx-auto text-lg sm:text-xl">
-              A comprehensive toolkit for organizing trips, managing budgets, and tracking travel plans.
+            <Text
+              variant="body-lg"
+              className="text-foreground/80 max-w-2xl mx-auto text-lg sm:text-xl"
+            >
+              A comprehensive toolkit for organizing trips, managing budgets, and tracking travel
+              plans.
             </Text>
             <div className="mt-6 max-w-2xl mx-auto px-6 py-4 rounded-2xl bg-[hsl(28,85%,35%)]/5 backdrop-blur-sm border border-[hsl(28,85%,35%)]/10">
               <Text className="text-lg text-foreground/70 italic">
-                &ldquo;Tiki tour&rdquo; (noun) - A New Zealand term for an extensive tour that visits the attractions or points of interest in an area. Originating from Māori culture, it embodies the spirit of exploration and discovery.
+                &ldquo;Tiki tour&rdquo; (noun) - A New Zealand term for an extensive tour that
+                visits the attractions or points of interest in an area. Originating from Māori
+                culture, it embodies the spirit of exploration and discovery.
               </Text>
             </div>
           </motion.div>
@@ -50,7 +57,9 @@ export default function AboutPage() {
                   Trip Organization
                 </h2>
                 <Text className="text-xl leading-relaxed text-foreground/80">
-                  A powerful set of tools designed to streamline your travel planning. Create detailed itineraries, manage bookings, and keep all your travel information in one place.
+                  A powerful set of tools designed to streamline your travel planning. Create
+                  detailed itineraries, manage bookings, and keep all your travel information in one
+                  place.
                 </Text>
               </Card>
             </motion.div>
@@ -150,8 +159,8 @@ export default function AboutPage() {
                   Create your first trip and experience organized travel planning.
                 </Text>
                 <Link href="/trips">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="px-10 py-5 text-lg font-medium bg-[#B0703C] text-primary-foreground hover:bg-[#B0703C]/90 rounded-full"
                   >
                     Create Trip

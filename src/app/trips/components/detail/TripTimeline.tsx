@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "~/components/ui/Card";
-import { Text } from "~/components/ui/Text";
-import { Modal } from "~/components/ui/Modal";
-import { Button } from "~/components/ui/Button";
+
 import { Badge } from "~/components/ui/Badge";
+import { Button } from "~/components/ui/Button";
+import { Card } from "~/components/ui/Card";
+import { Modal } from "~/components/ui/Modal";
+import { Text } from "~/components/ui/Text";
+
 import { Trip } from "~/types/trips";
+
 import { ActivityCalendar } from "./timeline/ActivityCalendar";
 import { ActivityDistribution } from "./timeline/ActivityDistribution";
 
@@ -35,7 +38,7 @@ type PriorityBadgeColor = {
 const PRIORITY_BADGE_COLORS: PriorityBadgeColor = {
   high: "error",
   medium: "warning",
-  low: "success"
+  low: "success",
 };
 
 export function TripTimeline({ trip }: TripTimelineProps) {
@@ -43,29 +46,25 @@ export function TripTimeline({ trip }: TripTimelineProps) {
   const [selectedActivities, setSelectedActivities] = useState<SelectedActivities | null>(null);
 
   const handleDayClick = (date: string) => {
-    const activities = trip.activities?.filter(
-      activity => activity.date.split("T")[0] === date
-    ) || [];
-    const events = trip.keyEvents?.filter(
-      event => event.date.split("T")[0] === date
-    ) || [];
+    const activities =
+      trip.activities?.filter((activity) => activity.date.split("T")[0] === date) || [];
+    const events = trip.keyEvents?.filter((event) => event.date.split("T")[0] === date) || [];
     setSelectedDay({
       date,
       activities,
-      events
+      events,
     });
   };
 
   const handleActivityClick = (type: string, date: string) => {
-    const activities = trip.activities?.filter(
-      activity => 
-        activity.date.split("T")[0] === date && 
-        activity.type === type
-    ) || [];
+    const activities =
+      trip.activities?.filter(
+        (activity) => activity.date.split("T")[0] === date && activity.type === type
+      ) || [];
     setSelectedActivities({
       type,
       date,
-      activities
+      activities,
     });
   };
 
@@ -73,31 +72,30 @@ export function TripTimeline({ trip }: TripTimelineProps) {
     <Card>
       <div className="space-y-8 p-6">
         {/* Activity Calendar */}
-        <ActivityCalendar 
-          trip={trip}
-          onDayClick={handleDayClick}
-        />
+        <ActivityCalendar trip={trip} onDayClick={handleDayClick} />
 
         {/* Activity Distribution */}
-        <ActivityDistribution 
-          trip={trip}
-          onPointClick={handleActivityClick}
-        />
+        <ActivityDistribution trip={trip} onPointClick={handleActivityClick} />
 
         {/* Day Details Modal */}
         <Modal
           isOpen={selectedDay !== null}
           onClose={() => setSelectedDay(null)}
-          title={selectedDay ? `Activities on ${new Date(selectedDay.date).toLocaleDateString()}` : ""}
+          title={
+            selectedDay ? `Activities on ${new Date(selectedDay.date).toLocaleDateString()}` : ""
+          }
         >
           <div className="space-y-6">
-            {!selectedDay || (selectedDay.activities.length === 0 && selectedDay.events.length === 0) ? (
+            {!selectedDay ||
+            (selectedDay.activities.length === 0 && selectedDay.events.length === 0) ? (
               <Text color="secondary">No activities or events scheduled for this day</Text>
             ) : (
               <>
                 {selectedDay.activities.length > 0 && (
                   <div className="space-y-4">
-                    <Text variant="body" className="font-semibold">Activities</Text>
+                    <Text variant="body" className="font-semibold">
+                      Activities
+                    </Text>
                     {selectedDay.activities.map((activity) => (
                       <div
                         key={activity.id}
@@ -107,10 +105,13 @@ export function TripTimeline({ trip }: TripTimelineProps) {
                           <div className="space-y-1">
                             <Text variant="body">{activity.activityName}</Text>
                             <Text variant="body-sm" color="secondary">
-                              {activity.location} • {activity.duration} mins • ${activity.activityCost}
+                              {activity.location} • {activity.duration} mins • $
+                              {activity.activityCost}
                             </Text>
                           </div>
-                          <Badge color="primary" variant="solid">{activity.type}</Badge>
+                          <Badge color="primary" variant="solid">
+                            {activity.type}
+                          </Badge>
                         </div>
                       </div>
                     ))}
@@ -119,7 +120,9 @@ export function TripTimeline({ trip }: TripTimelineProps) {
 
                 {selectedDay.events.length > 0 && (
                   <div className="space-y-4">
-                    <Text variant="body" className="font-semibold">Events</Text>
+                    <Text variant="body" className="font-semibold">
+                      Events
+                    </Text>
                     {selectedDay.events.map((event) => (
                       <div
                         key={event.id}
@@ -135,7 +138,9 @@ export function TripTimeline({ trip }: TripTimelineProps) {
                             )}
                           </div>
                           <Badge
-                            color={PRIORITY_BADGE_COLORS[event.priorityLevel as keyof PriorityBadgeColor]}
+                            color={
+                              PRIORITY_BADGE_COLORS[event.priorityLevel as keyof PriorityBadgeColor]
+                            }
                             variant="solid"
                           >
                             {event.priorityLevel}
@@ -179,7 +184,9 @@ export function TripTimeline({ trip }: TripTimelineProps) {
                           {activity.location} • {activity.duration} mins • ${activity.activityCost}
                         </Text>
                       </div>
-                      <Badge color="info" variant="solid">{activity.bookingStatus}</Badge>
+                      <Badge color="info" variant="solid">
+                        {activity.bookingStatus}
+                      </Badge>
                     </div>
                   </div>
                 ))}

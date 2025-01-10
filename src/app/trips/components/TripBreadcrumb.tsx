@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+
+import Link from "next/link";
+
 import { Trip } from "~/types/trips";
 
 interface TripBreadcrumbProps {

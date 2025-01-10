@@ -1,14 +1,15 @@
 "use client";
 
 import { useScroll, useTransform } from "framer-motion";
+
 import { useRef } from "react";
 
+import { CTASection } from "~/components/home/CTASection";
 import { FeaturesSection } from "~/components/home/FeaturesSection";
 import { HeroSection } from "~/components/home/HeroSection";
 import { ScrollToTopButton } from "~/components/home/ScrollToTopButton";
 import { TestimonialsSection } from "~/components/home/TestimonialsSection";
 import { TrustedBySection } from "~/components/home/TrustedBySection";
-import { CTASection } from "~/components/home/CTASection";
 import { Container } from "~/components/ui/Container";
 
 export default function HomePage() {
@@ -20,9 +21,12 @@ export default function HomePage() {
   const y = useTransform(scrollYProgress, [0, 0.5], [0, 10]);
 
   return (
-    <div ref={containerRef} className="flex flex-col items-center w-full relative min-h-screen pb-12">
-        <div className="absolute w-full min-h-[150vh] bg-gradient-to-b from-background via-background/95 to-background" />
-      
+    <div
+      ref={containerRef}
+      className="flex flex-col items-center w-full relative min-h-screen pb-12"
+    >
+      <div className="absolute w-full min-h-[150vh] bg-gradient-to-b from-background via-background/95 to-background" />
+
       <section className="w-full sm:-mt-24 flex justify-center ">
         <Container className="px-6 md:px-8 lg:px-10 max-w-7xl">
           <HeroSection opacity={opacity} scale={scale} y={y} />

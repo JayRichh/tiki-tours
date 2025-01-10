@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { Trip, Checklist, ChecklistItem } from "~/types/trips";
-import { ChecklistForm, ChecklistFormData } from "./ChecklistForm";
-import { Card, CardHeader, CardContent } from "~/components/ui/Card";
-import { Button } from "~/components/ui/Button";
-import { Text } from "~/components/ui/Text";
+import { AlertCircle, CheckCircle, Circle, Clock, Plus } from "lucide-react";
+
+import { useCallback, useEffect, useState } from "react";
+
 import { Badge } from "~/components/ui/Badge";
+import { Button } from "~/components/ui/Button";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { Modal } from "~/components/ui/Modal";
-import { Plus, CheckCircle, Circle, AlertCircle, Clock } from "lucide-react";
+import { Text } from "~/components/ui/Text";
+
+import { Checklist, ChecklistItem, Trip } from "~/types/trips";
+
+import { ChecklistForm, ChecklistFormData } from "./ChecklistForm";
 
 interface TripChecklistsProps {
   trip: Trip;
@@ -38,7 +42,7 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
         setDialogState({
           type: dialog as "checklist" | "item",
           action: action as "new" | "edit",
-          id: param || undefined
+          id: param || undefined,
         });
       }
     };
@@ -49,74 +53,85 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
   }, []);
 
   // Helper to update dialog state and URL hash
-  const updateDialogState = (type: typeof dialogState.type, action: typeof dialogState.action, id?: string) => {
+  const updateDialogState = (
+    type: typeof dialogState.type,
+    action: typeof dialogState.action,
+    id?: string
+  ) => {
     if (!type || !action) {
       window.history.pushState(null, "", window.location.pathname + "#checklists");
       setDialogState({ type: null, action: null });
       return;
     }
 
-    const hash = `#checklists/${type}/${action}${id ? `/${id}` : ''}`;
+    const hash = `#checklists/${type}/${action}${id ? `/${id}` : ""}`;
     window.history.pushState(null, "", hash);
     setDialogState({ type, action, id });
   };
 
-  const handleAddChecklist = useCallback(async (data: ChecklistFormData) => {
-    const newChecklist: Checklist = {
-      id: crypto.randomUUID(),
-      title: data.title,
-      items: [],
-      category: data.category,
-      dueDate: data.dueDate
-    };
+  const handleAddChecklist = useCallback(
+    async (data: ChecklistFormData) => {
+      const newChecklist: Checklist = {
+        id: crypto.randomUUID(),
+        title: data.title,
+        items: [],
+        category: data.category,
+        dueDate: data.dueDate,
+      };
 
-    await onUpdate({
-      checklists: [...(trip.checklists || []), newChecklist]
-    });
-    updateDialogState(null, null);
-  }, [trip, onUpdate]);
+      await onUpdate({
+        checklists: [...(trip.checklists || []), newChecklist],
+      });
+      updateDialogState(null, null);
+    },
+    [trip, onUpdate]
+  );
 
-  const handleAddItem = useCallback(async (checklistId: string, data: ChecklistFormData) => {
-    const newItem: ChecklistItem = {
-      id: crypto.randomUUID(),
-      title: data.title,
-      completed: false,
-      dueDate: data.dueDate,
-      priority: data.priority,
-      notes: data.notes
-    };
+  const handleAddItem = useCallback(
+    async (checklistId: string, data: ChecklistFormData) => {
+      const newItem: ChecklistItem = {
+        id: crypto.randomUUID(),
+        title: data.title,
+        completed: false,
+        dueDate: data.dueDate,
+        priority: data.priority,
+        notes: data.notes,
+      };
 
-    const updatedChecklists = trip.checklists?.map(checklist => 
-      checklist.id === checklistId
-        ? { ...checklist, items: [...checklist.items, newItem] }
-        : checklist
-    );
+      const updatedChecklists = trip.checklists?.map((checklist) =>
+        checklist.id === checklistId
+          ? { ...checklist, items: [...checklist.items, newItem] }
+          : checklist
+      );
 
-    await onUpdate({ checklists: updatedChecklists });
-    updateDialogState(null, null);
-  }, [trip, onUpdate]);
+      await onUpdate({ checklists: updatedChecklists });
+      updateDialogState(null, null);
+    },
+    [trip, onUpdate]
+  );
 
-  const handleToggleItem = useCallback(async (checklistId: string, itemId: string) => {
-    const updatedChecklists = trip.checklists?.map(checklist => 
-      checklist.id === checklistId
-        ? {
-            ...checklist,
-            items: checklist.items.map(item =>
-              item.id === itemId
-                ? { ...item, completed: !item.completed }
-                : item
-            )
-          }
-        : checklist
-    );
+  const handleToggleItem = useCallback(
+    async (checklistId: string, itemId: string) => {
+      const updatedChecklists = trip.checklists?.map((checklist) =>
+        checklist.id === checklistId
+          ? {
+              ...checklist,
+              items: checklist.items.map((item) =>
+                item.id === itemId ? { ...item, completed: !item.completed } : item
+              ),
+            }
+          : checklist
+      );
 
-    await onUpdate({ checklists: updatedChecklists });
-  }, [trip, onUpdate]);
+      await onUpdate({ checklists: updatedChecklists });
+    },
+    [trip, onUpdate]
+  );
 
   const getItemStatus = useCallback((item: ChecklistItem) => {
     if (item.completed) return "completed";
     if (!item.dueDate) return "pending";
-    
+
     const now = new Date();
     const dueDate = new Date(item.dueDate);
     const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -158,7 +173,7 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
       />
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-          {trip.checklists?.map(checklist => (
+          {trip.checklists?.map((checklist) => (
             <Card key={checklist.id}>
               <CardHeader
                 title={
@@ -174,13 +189,17 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
                     </Button>
                   </div>
                 }
-                subtitle={checklist.category && (
-                  <Badge variant="solid" color="primary">{checklist.category}</Badge>
-                )}
+                subtitle={
+                  checklist.category && (
+                    <Badge variant="solid" color="primary">
+                      {checklist.category}
+                    </Badge>
+                  )
+                }
               />
               <CardContent className="w-full">
                 <div className="grid grid-cols-1 gap-3 w-full">
-                  {checklist.items.map(item => {
+                  {checklist.items.map((item) => {
                     const status = getItemStatus(item);
                     return (
                       <div
@@ -194,9 +213,7 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
                           {renderStatusIcon(status)}
                         </button>
                         <div className="flex-1">
-                          <Text
-                            className={item.completed ? "line-through text-foreground/50" : ""}
-                          >
+                          <Text className={item.completed ? "line-through text-foreground/50" : ""}>
                             {item.title}
                           </Text>
                           {item.dueDate && (
@@ -217,8 +234,8 @@ export function TripChecklists({ trip, onUpdate }: TripChecklistsProps) {
                               item.priority === "high"
                                 ? "error"
                                 : item.priority === "medium"
-                                ? "warning"
-                                : "info"
+                                  ? "warning"
+                                  : "info"
                             }
                           >
                             {item.priority}

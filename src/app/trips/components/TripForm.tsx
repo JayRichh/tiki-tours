@@ -3,8 +3,12 @@
 import { Button } from "~/components/ui/Button";
 import { Select } from "~/components/ui/Select";
 import { Text } from "~/components/ui/Text";
-import { Trip, TripStatus } from "~/types/trips";
+
 import { useForm } from "~/hooks/useForm";
+
+import { Trip, TripStatus } from "~/types/trips";
+
+import { statusOptions } from "../constants";
 
 interface TripFormValues {
   destination: string;
@@ -19,7 +23,6 @@ interface TripFormValues {
   holidayPreferences: string;
   status: TripStatus;
 }
-import { statusOptions } from "../constants";
 
 interface TripFormProps {
   trip: Trip | null;
@@ -48,7 +51,7 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
     numberOfTravelers: trip?.numberOfTravelers || undefined,
     travelMode: trip?.travelMode || "",
     holidayPreferences: trip?.holidayPreferences?.join(", ") || "",
-    status: trip?.status || "draft"
+    status: trip?.status || "draft",
   };
 
   const form = useForm<TripFormValues>(initialValues, async (values) => {
@@ -57,7 +60,10 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
       if (value !== undefined && value !== null && value !== "") {
         if (key === "holidayPreferences") {
           // Split and trim preferences
-          const prefs = value.split(",").map((p: string) => p.trim()).filter(Boolean);
+          const prefs = value
+            .split(",")
+            .map((p: string) => p.trim())
+            .filter(Boolean);
           formData.append(key, prefs.join(","));
         } else {
           formData.append(key, value.toString());
@@ -71,7 +77,9 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
     <form onSubmit={form.handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div>
-          <Text variant="body-sm" color="secondary">Destination</Text>
+          <Text variant="body-sm" color="secondary">
+            Destination
+          </Text>
           <input
             type="text"
             name="destination"
@@ -85,23 +93,27 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Text variant="body-sm" color="secondary">Start Date</Text>
+            <Text variant="body-sm" color="secondary">
+              Start Date
+            </Text>
             <input
               type="date"
               name="startDate"
-            value={form.values.startDate}
-            onChange={(e) => form.handleChange("startDate", e.target.value)}
+              value={form.values.startDate}
+              onChange={(e) => form.handleChange("startDate", e.target.value)}
               className="w-full px-4 py-2 rounded-lg border-2 border-border/50 bg-background/50"
               required
             />
           </div>
           <div>
-            <Text variant="body-sm" color="secondary">End Date</Text>
+            <Text variant="body-sm" color="secondary">
+              End Date
+            </Text>
             <input
               type="date"
               name="endDate"
-            value={form.values.endDate}
-            onChange={(e) => form.handleChange("endDate", e.target.value)}
+              value={form.values.endDate}
+              onChange={(e) => form.handleChange("endDate", e.target.value)}
               className="w-full px-4 py-2 rounded-lg border-2 border-border/50 bg-background/50"
               required
             />
@@ -118,7 +130,9 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
                 onChange={(e) => form.handleChange("relocationPlan", e.target.checked)}
                 value="true"
               />
-              <Text variant="body-sm" color="secondary">Relocation Plan</Text>
+              <Text variant="body-sm" color="secondary">
+                Relocation Plan
+              </Text>
             </label>
           </div>
           <div>
@@ -130,25 +144,33 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
                 onChange={(e) => form.handleChange("flexibleDates", e.target.checked)}
                 value="true"
               />
-              <Text variant="body-sm" color="secondary">Flexible Dates</Text>
+              <Text variant="body-sm" color="secondary">
+                Flexible Dates
+              </Text>
             </label>
           </div>
         </div>
 
         <div>
-          <Text variant="body-sm" color="secondary">Budget (optional)</Text>
+          <Text variant="body-sm" color="secondary">
+            Budget (optional)
+          </Text>
           <input
             type="number"
             name="tripBudget"
             placeholder="Enter budget amount"
             value={form.values.tripBudget || ""}
-            onChange={(e) => form.handleChange("tripBudget", e.target.value ? Number(e.target.value) : undefined)}
+            onChange={(e) =>
+              form.handleChange("tripBudget", e.target.value ? Number(e.target.value) : undefined)
+            }
             className="w-full px-4 py-2 rounded-lg border-2 border-border/50 bg-background/50"
           />
         </div>
 
         <div>
-          <Text variant="body-sm" color="secondary">Trip Details</Text>
+          <Text variant="body-sm" color="secondary">
+            Trip Details
+          </Text>
           <textarea
             name="tripDetails"
             placeholder="Add any important details about your trip"
@@ -161,18 +183,27 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Text variant="body-sm" color="secondary">Number of Travelers</Text>
+            <Text variant="body-sm" color="secondary">
+              Number of Travelers
+            </Text>
             <input
               type="number"
               name="numberOfTravelers"
               placeholder="How many people?"
               value={form.values.numberOfTravelers || ""}
-              onChange={(e) => form.handleChange("numberOfTravelers", e.target.value ? Number(e.target.value) : undefined)}
+              onChange={(e) =>
+                form.handleChange(
+                  "numberOfTravelers",
+                  e.target.value ? Number(e.target.value) : undefined
+                )
+              }
               className="w-full px-4 py-2 rounded-lg border-2 border-border/50 bg-background/50"
             />
           </div>
           <div>
-            <Text variant="body-sm" color="secondary">Travel Mode</Text>
+            <Text variant="body-sm" color="secondary">
+              Travel Mode
+            </Text>
             <select
               name="travelMode"
               value={form.values.travelMode}
@@ -180,7 +211,7 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
               className="w-full px-4 py-2 rounded-lg border-2 border-border/50 bg-background/50"
             >
               <option value="">Select mode of travel</option>
-              {travelModeOptions.map(option => (
+              {travelModeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -190,7 +221,9 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
         </div>
 
         <div>
-          <Text variant="body-sm" color="secondary">Holiday Preferences (comma-separated)</Text>
+          <Text variant="body-sm" color="secondary">
+            Holiday Preferences (comma-separated)
+          </Text>
           <input
             type="text"
             name="holidayPreferences"
@@ -203,7 +236,9 @@ export function TripForm({ trip, onSubmit, onCancel }: TripFormProps) {
 
         {trip && (
           <div>
-            <Text variant="body-sm" color="secondary">Status</Text>
+            <Text variant="body-sm" color="secondary">
+              Status
+            </Text>
             <Select
               options={statusOptions}
               value={form.values.status}

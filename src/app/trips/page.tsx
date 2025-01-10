@@ -1,16 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useTrips } from "~/hooks/useTrips";
-import { Trip, TripStatus } from "~/types/trips";
+
 import { Container } from "~/components/ui/Container";
 import { Modal } from "~/components/ui/Modal";
-import { TripStats } from "./components/TripStats";
-import { TripFilters } from "./components/TripFilters";
-import { TripCard } from "./components/TripCard";
-import { TripForm } from "./components/TripForm";
-import { DeleteTripModal } from "./components/DeleteTripModal";
 import { Spinner } from "~/components/ui/Spinner";
+
+import { useTrips } from "~/hooks/useTrips";
+
+import { Trip, TripStatus } from "~/types/trips";
+
+import { DeleteTripModal } from "./components/DeleteTripModal";
+import { TripCard } from "./components/TripCard";
+import { TripFilters } from "./components/TripFilters";
+import { TripForm } from "./components/TripForm";
+import { TripStats } from "./components/TripStats";
 
 export default function TripsPage() {
   const [filters, setFilters] = useState<{ status?: TripStatus }>({});
@@ -20,45 +24,51 @@ export default function TripsPage() {
   const { trips, stats, isLoading, createTrip, updateTrip, deleteTrip } = useTrips(filters);
 
   useEffect(() => {
-    console.log('Trips page state:', { isLoading, tripsCount: trips.length, filters });
+    console.log("Trips page state:", { isLoading, tripsCount: trips.length, filters });
   }, [isLoading, trips, filters]);
 
-  const handleCreateTrip = useCallback(async (formData: FormData) => {
-    const newTrip: Omit<Trip, "id" | "slug"> = {
-      destination: formData.get("destination") as string,
-      startDate: formData.get("startDate") as string,
-      endDate: formData.get("endDate") as string,
-      tripBudget: formData.get("tripBudget") ? Number(formData.get("tripBudget")) : 0,
-      status: "draft",
-      activities: [],
-      tripDetails: formData.get("tripDetails") as string || undefined,
-      flexibleDates: formData.get("flexibleDates") === "true",
-      numberOfTravelers: Number(formData.get("numberOfTravelers")) || undefined,
-      travelMode: formData.get("travelMode") as string || undefined
-    };
+  const handleCreateTrip = useCallback(
+    async (formData: FormData) => {
+      const newTrip: Omit<Trip, "id" | "slug"> = {
+        destination: formData.get("destination") as string,
+        startDate: formData.get("startDate") as string,
+        endDate: formData.get("endDate") as string,
+        tripBudget: formData.get("tripBudget") ? Number(formData.get("tripBudget")) : 0,
+        status: "draft",
+        activities: [],
+        tripDetails: (formData.get("tripDetails") as string) || undefined,
+        flexibleDates: formData.get("flexibleDates") === "true",
+        numberOfTravelers: Number(formData.get("numberOfTravelers")) || undefined,
+        travelMode: (formData.get("travelMode") as string) || undefined,
+      };
 
-    await createTrip(newTrip);
-    setIsCreateModalOpen(false);
-  }, [createTrip]);
+      await createTrip(newTrip);
+      setIsCreateModalOpen(false);
+    },
+    [createTrip]
+  );
 
-  const handleUpdateTrip = useCallback(async (formData: FormData) => {
-    if (!selectedTrip) return;
+  const handleUpdateTrip = useCallback(
+    async (formData: FormData) => {
+      if (!selectedTrip) return;
 
-    const updates: Partial<Trip> = {
-      destination: formData.get("destination") as string,
-      startDate: formData.get("startDate") as string,
-      endDate: formData.get("endDate") as string,
-      tripBudget: Number(formData.get("tripBudget")),
-      status: formData.get("status") as TripStatus,
-      tripDetails: formData.get("tripDetails") as string || undefined,
-      flexibleDates: formData.get("flexibleDates") === "true",
-      numberOfTravelers: Number(formData.get("numberOfTravelers")) || undefined,
-      travelMode: formData.get("travelMode") as string || undefined
-    };
+      const updates: Partial<Trip> = {
+        destination: formData.get("destination") as string,
+        startDate: formData.get("startDate") as string,
+        endDate: formData.get("endDate") as string,
+        tripBudget: Number(formData.get("tripBudget")),
+        status: formData.get("status") as TripStatus,
+        tripDetails: (formData.get("tripDetails") as string) || undefined,
+        flexibleDates: formData.get("flexibleDates") === "true",
+        numberOfTravelers: Number(formData.get("numberOfTravelers")) || undefined,
+        travelMode: (formData.get("travelMode") as string) || undefined,
+      };
 
-    await updateTrip(selectedTrip.slug, updates);
-    setSelectedTrip(null);
-  }, [selectedTrip, updateTrip]);
+      await updateTrip(selectedTrip.slug, updates);
+      setSelectedTrip(null);
+    },
+    [selectedTrip, updateTrip]
+  );
 
   const handleDeleteTrip = useCallback(async () => {
     if (!selectedTrip) return;
@@ -80,7 +90,7 @@ export default function TripsPage() {
   return (
     <Container className="w-full min-h-screen">
       <TripStats stats={stats} />
-      
+
       <TripFilters
         status={filters.status}
         onStatusChange={(status) => setFilters({ status })}

@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback } from "react";
+
 import { Button } from "~/components/ui/Button";
 import { Text } from "~/components/ui/Text";
+
 import { Activity } from "~/types/trips";
 
 interface ActivityFormProps {
@@ -12,30 +14,35 @@ interface ActivityFormProps {
 }
 
 export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps) {
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    
-    const data: Omit<Activity, "id"> = {
-      activityName: formData.get("activityName") as string,
-      activityCost: Number(formData.get("activityCost")),
-      date: formData.get("date") as string,
-      location: formData.get("location") as string,
-      duration: Number(formData.get("duration")),
-      type: formData.get("type") as Activity["type"],
-      bookingStatus: formData.get("bookingStatus") as Activity["bookingStatus"] || undefined,
-      notes: formData.get("notes") as string || undefined,
-      category: formData.get("category") as string || undefined
-    };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
 
-    onSubmit(data);
-  }, [onSubmit]);
+      const data: Omit<Activity, "id"> = {
+        activityName: formData.get("activityName") as string,
+        activityCost: Number(formData.get("activityCost")),
+        date: formData.get("date") as string,
+        location: formData.get("location") as string,
+        duration: Number(formData.get("duration")),
+        type: formData.get("type") as Activity["type"],
+        bookingStatus: (formData.get("bookingStatus") as Activity["bookingStatus"]) || undefined,
+        notes: (formData.get("notes") as string) || undefined,
+        category: (formData.get("category") as string) || undefined,
+      };
+
+      onSubmit(data);
+    },
+    [onSubmit]
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div>
-          <Text variant="body-sm" color="secondary">Activity Name</Text>
+          <Text variant="body-sm" color="secondary">
+            Activity Name
+          </Text>
           <input
             type="text"
             name="activityName"
@@ -47,7 +54,9 @@ export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Text variant="body-sm" color="secondary">Date</Text>
+            <Text variant="body-sm" color="secondary">
+              Date
+            </Text>
             <input
               type="date"
               name="date"
@@ -57,7 +66,9 @@ export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps
             />
           </div>
           <div>
-            <Text variant="body-sm" color="secondary">Duration (mins)</Text>
+            <Text variant="body-sm" color="secondary">
+              Duration (mins)
+            </Text>
             <input
               type="number"
               name="duration"
@@ -69,7 +80,9 @@ export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps
         </div>
 
         <div>
-          <Text variant="body-sm" color="secondary">Location</Text>
+          <Text variant="body-sm" color="secondary">
+            Location
+          </Text>
           <input
             type="text"
             name="location"
@@ -81,7 +94,9 @@ export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Text variant="body-sm" color="secondary">Cost</Text>
+            <Text variant="body-sm" color="secondary">
+              Cost
+            </Text>
             <input
               type="number"
               name="activityCost"
@@ -91,7 +106,9 @@ export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps
             />
           </div>
           <div>
-            <Text variant="body-sm" color="secondary">Category</Text>
+            <Text variant="body-sm" color="secondary">
+              Category
+            </Text>
             <input
               type="text"
               name="category"
@@ -103,7 +120,9 @@ export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Text variant="body-sm" color="secondary">Type</Text>
+            <Text variant="body-sm" color="secondary">
+              Type
+            </Text>
             <select
               name="type"
               defaultValue={activity?.type}
@@ -118,7 +137,9 @@ export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps
             </select>
           </div>
           <div>
-            <Text variant="body-sm" color="secondary">Booking Status</Text>
+            <Text variant="body-sm" color="secondary">
+              Booking Status
+            </Text>
             <select
               name="bookingStatus"
               defaultValue={activity?.bookingStatus}
@@ -133,7 +154,9 @@ export function ActivityForm({ activity, onSubmit, onCancel }: ActivityFormProps
         </div>
 
         <div>
-          <Text variant="body-sm" color="secondary">Notes</Text>
+          <Text variant="body-sm" color="secondary">
+            Notes
+          </Text>
           <textarea
             name="notes"
             defaultValue={activity?.notes}

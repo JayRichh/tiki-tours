@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+
 import { Spinner } from "~/components/ui/Spinner";
 
 function TripsLoading() {

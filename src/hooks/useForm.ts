@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export function useForm<T extends Record<string, any>>(
   initialValues: T,
@@ -11,31 +11,36 @@ export function useForm<T extends Record<string, any>>(
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = useCallback((name: keyof T, value: any) => {
-    setValues(prev => ({ ...prev, [name]: value }));
+    setValues((prev) => ({ ...prev, [name]: value }));
     // Clear error when field is modified
-    setErrors(prev => ({ ...prev, [name]: undefined }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
   }, []);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
 
-    try {
-      await onSubmit(values);
-      // Reset form on successful submission
-      setValues(initialValues);
-      setErrors({});
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrors(prev => ({ ...prev, submit: error.message } as Partial<Record<keyof T, string>>));
+      try {
+        await onSubmit(values);
+        // Reset form on successful submission
+        setValues(initialValues);
+        setErrors({});
+      } catch (error) {
+        if (error instanceof Error) {
+          setErrors(
+            (prev) => ({ ...prev, submit: error.message }) as Partial<Record<keyof T, string>>
+          );
+        }
+      } finally {
+        setIsSubmitting(false);
       }
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [values, initialValues, onSubmit]);
+    },
+    [values, initialValues, onSubmit]
+  );
 
   const setFieldError = useCallback((field: keyof T, message: string) => {
-    setErrors(prev => ({ ...prev, [field]: message }));
+    setErrors((prev) => ({ ...prev, [field]: message }));
   }, []);
 
   const reset = useCallback(() => {
@@ -50,6 +55,6 @@ export function useForm<T extends Record<string, any>>(
     handleChange,
     handleSubmit,
     setFieldError,
-    reset
+    reset,
   };
 }

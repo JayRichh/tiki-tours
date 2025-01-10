@@ -6,7 +6,7 @@ export const statusColors: Record<TripStatus, string> = {
   booked: "bg-green-500",
   relocating: "bg-purple-500",
   in_progress: "bg-yellow-500",
-  completed: "bg-indigo-500"
+  completed: "bg-indigo-500",
 };
 
 export const statusOptions = [
@@ -15,5 +15,5 @@ export const statusOptions = [
   { value: "booked", label: "Booked" },
   { value: "relocating", label: "Relocating" },
   { value: "in_progress", label: "In Progress" },
-  { value: "completed", label: "Completed" }
+  { value: "completed", label: "Completed" },
 ];

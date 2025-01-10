@@ -3,6 +3,7 @@
 import { Button } from "~/components/ui/Button";
 import { Modal } from "~/components/ui/Modal";
 import { Text } from "~/components/ui/Text";
+
 import { Trip } from "~/types/trips";
 
 interface DeleteTripModalProps {

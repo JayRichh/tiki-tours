@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useScroll } from "framer-motion";
+
+import { useEffect, useRef } from "react";
+
 import { FeaturesScene } from "../scenes/FeaturesScene";
 
 interface FeaturesSceneComponentProps {
@@ -12,7 +14,7 @@ export function FeaturesSceneComponent({ className }: FeaturesSceneComponentProp
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<FeaturesScene | null>(null);
   const { scrollYProgress } = useScroll({
-    offset: ["start end", "end start"]
+    offset: ["start end", "end start"],
   });
 
   useEffect(() => {
@@ -39,11 +41,11 @@ export function FeaturesSceneComponent({ className }: FeaturesSceneComponentProp
       handleResize();
 
       // Add listeners
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
       const unsubscribeScroll = scrollYProgress.on("change", updateScroll);
 
       return () => {
-        window.removeEventListener('resize', handleResize);
+        window.removeEventListener("resize", handleResize);
         unsubscribeScroll();
         if (sceneRef.current) {
           sceneRef.current.dispose();
@@ -54,18 +56,18 @@ export function FeaturesSceneComponent({ className }: FeaturesSceneComponentProp
   }, [scrollYProgress]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className={className}
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
-        width: '100vw',
-        height: '100vh',
-        pointerEvents: 'auto',
+        width: "100vw",
+        height: "100vh",
+        pointerEvents: "auto",
         zIndex: 0,
-        overflow: 'hidden'
+        overflow: "hidden",
       }}
     />
   );

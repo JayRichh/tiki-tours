@@ -1,9 +1,11 @@
 "use client";
 
+import { Calendar, DollarSign, Globe, Users } from "lucide-react";
+
 import { Card, CardContent } from "~/components/ui/Card";
 import { Text } from "~/components/ui/Text";
+
 import { TripStats as TripStatsType } from "~/types/trips";
-import { Globe, Calendar, Users, DollarSign } from "lucide-react";
 
 interface TripStatsProps {
   stats: TripStatsType;
@@ -15,7 +17,9 @@ export function TripStats({ stats }: TripStatsProps) {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
-            <Text variant="body-sm" color="secondary">Total Budget</Text>
+            <Text variant="body-sm" color="secondary">
+              Total Budget
+            </Text>
             <DollarSign className="h-5 w-5 text-primary" />
           </div>
           <Text className="text-2xl font-bold mt-2">${stats.totalBudget.toLocaleString()}</Text>
@@ -25,7 +29,9 @@ export function TripStats({ stats }: TripStatsProps) {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
-            <Text variant="body-sm" color="secondary">Active Trips</Text>
+            <Text variant="body-sm" color="secondary">
+              Active Trips
+            </Text>
             <Globe className="h-5 w-5 text-primary" />
           </div>
           <Text className="text-2xl font-bold mt-2">{stats.inProgressTrips}</Text>
@@ -35,7 +41,9 @@ export function TripStats({ stats }: TripStatsProps) {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
-            <Text variant="body-sm" color="secondary">Upcoming Trips</Text>
+            <Text variant="body-sm" color="secondary">
+              Upcoming Trips
+            </Text>
             <Calendar className="h-5 w-5 text-primary" />
           </div>
           <Text className="text-2xl font-bold mt-2">{stats.upcomingTrips}</Text>
@@ -45,7 +53,9 @@ export function TripStats({ stats }: TripStatsProps) {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
-            <Text variant="body-sm" color="secondary">Completed Trips</Text>
+            <Text variant="body-sm" color="secondary">
+              Completed Trips
+            </Text>
             <Users className="h-5 w-5 text-primary" />
           </div>
           <Text className="text-2xl font-bold mt-2">{stats.completedTrips}</Text>

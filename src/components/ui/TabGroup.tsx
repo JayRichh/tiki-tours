@@ -1,7 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+
 import { useEffect, useState } from "react";
+
 import { cn } from "~/utils/cn";
 
 interface Tab {
@@ -100,9 +102,7 @@ export function TabGroup({
           transition={{ duration: 0.2 }}
           className="relative flex-1 w-full flex flex-col"
         >
-          <div className="w-full h-full flex flex-col flex-1">
-            {activeContent}
-          </div>
+          <div className="w-full h-full flex flex-col flex-1">{activeContent}</div>
         </motion.div>
       </AnimatePresence>
     </div>

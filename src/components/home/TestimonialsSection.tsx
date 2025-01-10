@@ -29,7 +29,13 @@ const testimonials = [
   },
 ];
 
-function TestimonialCard({ testimonial, index }: { testimonial: typeof testimonials[0]; index: number }) {
+function TestimonialCard({
+  testimonial,
+  index,
+}: {
+  testimonial: (typeof testimonials)[0];
+  index: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -43,7 +49,9 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof testimoni
           <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500" />
         ))}
       </div>
-      <Text className="mb-4 text-foreground-secondary italic">&quot;{testimonial.content}&quot;</Text>
+      <Text className="mb-4 text-foreground-secondary italic">
+        &quot;{testimonial.content}&quot;
+      </Text>
       <div>
         <Text weight="medium">{testimonial.name}</Text>
         <Text variant="body-sm" color="secondary">

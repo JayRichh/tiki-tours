@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Card, CardHeader, CardContent } from "~/components/ui/Card";
-import { Text } from "~/components/ui/Text";
+import { Calendar, Clock, Plus } from "lucide-react";
+
+import { useEffect, useMemo, useState } from "react";
+
 import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { Modal } from "~/components/ui/Modal";
-import { Trip, KeyEvent, Deadline } from "~/types/trips";
-import { Calendar, Clock, Plus } from "lucide-react";
+import { Text } from "~/components/ui/Text";
+
+import { Deadline, KeyEvent, Trip } from "~/types/trips";
 
 interface TripPlanningProps {
   trip: Trip;
@@ -26,7 +29,7 @@ export function TripPlanning({
   onDeleteKeyEvent,
   onAddDeadline,
   onUpdateDeadline,
-  onDeleteDeadline
+  onDeleteDeadline,
 }: TripPlanningProps) {
   // Get dialog state from URL hash
   const [dialogState, setDialogState] = useState<{
@@ -38,16 +41,16 @@ export function TripPlanning({
 
   const selectedEvent = useMemo(() => {
     if (dialogState.type === "event" && dialogState.id) {
-      return trip.keyEvents?.find(e => e.id === dialogState.id);
+      return trip.keyEvents?.find((e) => e.id === dialogState.id);
     }
-    return dialogState.date ? { date: dialogState.date } as Partial<KeyEvent> : undefined;
+    return dialogState.date ? ({ date: dialogState.date } as Partial<KeyEvent>) : undefined;
   }, [dialogState, trip.keyEvents]);
 
   const selectedDeadline = useMemo(() => {
     if (dialogState.type === "deadline" && dialogState.id) {
-      return trip.deadlines?.find(d => d.id === dialogState.id);
+      return trip.deadlines?.find((d) => d.id === dialogState.id);
     }
-    return dialogState.date ? { dueDate: dialogState.date } as Partial<Deadline> : undefined;
+    return dialogState.date ? ({ dueDate: dialogState.date } as Partial<Deadline>) : undefined;
   }, [dialogState, trip.deadlines]);
 
   useEffect(() => {
@@ -70,8 +73,9 @@ export function TripPlanning({
         setDialogState({
           type: dialog as "event" | "deadline",
           action: action as "new" | "edit",
-          id: param && !param.startsWith("today=") && !param.startsWith("date=") ? param : undefined,
-          date
+          id:
+            param && !param.startsWith("today=") && !param.startsWith("date=") ? param : undefined,
+          date,
         });
       }
     };
@@ -82,14 +86,19 @@ export function TripPlanning({
   }, []);
 
   // Helper to update dialog state and URL hash
-  const updateDialogState = (type: typeof dialogState.type, action: typeof dialogState.action, id?: string, date?: string) => {
+  const updateDialogState = (
+    type: typeof dialogState.type,
+    action: typeof dialogState.action,
+    id?: string,
+    date?: string
+  ) => {
     if (!type || !action) {
       window.history.pushState(null, "", window.location.pathname + "#planning");
       setDialogState({ type: null, action: null });
       return;
     }
 
-    const hash = `#planning/${type}/${action}${id ? `/${id}` : ''}${date ? `/date=${date}` : ''}`;
+    const hash = `#planning/${type}/${action}${id ? `/${id}` : ""}${date ? `/date=${date}` : ""}`;
     window.history.pushState(null, "", hash);
     setDialogState({ type, action, id, date });
   };
@@ -97,12 +106,12 @@ export function TripPlanning({
   const handleEventSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     const data = {
       title: formData.get("title") as string,
       date: formData.get("date") as string,
-      description: formData.get("description") as string || undefined,
-      priorityLevel: formData.get("priorityLevel") as "low" | "medium" | "high" || "medium"
+      description: (formData.get("description") as string) || undefined,
+      priorityLevel: (formData.get("priorityLevel") as "low" | "medium" | "high") || "medium",
     };
 
     if (dialogState.action === "edit" && dialogState.id) {
@@ -116,11 +125,11 @@ export function TripPlanning({
   const handleDeadlineSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     const data = {
       description: formData.get("description") as string,
       dueDate: formData.get("dueDate") as string,
-      completed: formData.get("completed") === "true"
+      completed: formData.get("completed") === "true",
     };
 
     if (dialogState.action === "edit" && dialogState.id) {
@@ -193,8 +202,8 @@ export function TripPlanning({
                           event.priorityLevel === "high"
                             ? "error"
                             : event.priorityLevel === "medium"
-                            ? "warning"
-                            : "info"
+                              ? "warning"
+                              : "info"
                         }
                       >
                         {event.priorityLevel}
@@ -240,7 +249,7 @@ export function TripPlanning({
                         size="sm"
                         onClick={() => {
                           onUpdateDeadline?.(deadline.id, {
-                            completed: !deadline.completed
+                            completed: !deadline.completed,
                           });
                         }}
                       >
@@ -271,7 +280,9 @@ export function TripPlanning({
         <form onSubmit={handleEventSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <Text variant="body-sm" color="secondary">Title</Text>
+              <Text variant="body-sm" color="secondary">
+                Title
+              </Text>
               <input
                 type="text"
                 name="title"
@@ -281,7 +292,9 @@ export function TripPlanning({
               />
             </div>
             <div>
-              <Text variant="body-sm" color="secondary">Date</Text>
+              <Text variant="body-sm" color="secondary">
+                Date
+              </Text>
               <input
                 type="date"
                 name="date"
@@ -291,7 +304,9 @@ export function TripPlanning({
               />
             </div>
             <div>
-              <Text variant="body-sm" color="secondary">Description</Text>
+              <Text variant="body-sm" color="secondary">
+                Description
+              </Text>
               <textarea
                 name="description"
                 defaultValue={selectedEvent?.description}
@@ -300,7 +315,9 @@ export function TripPlanning({
               />
             </div>
             <div>
-              <Text variant="body-sm" color="secondary">Priority</Text>
+              <Text variant="body-sm" color="secondary">
+                Priority
+              </Text>
               <select
                 name="priorityLevel"
                 defaultValue={selectedEvent?.priorityLevel || "medium"}
@@ -313,10 +330,7 @@ export function TripPlanning({
             </div>
           </div>
           <div className="flex justify-end gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => updateDialogState(null, null)}
-            >
+            <Button variant="ghost" onClick={() => updateDialogState(null, null)}>
               Cancel
             </Button>
             <Button variant="primary" type="submit">
@@ -335,7 +349,9 @@ export function TripPlanning({
         <form onSubmit={handleDeadlineSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <Text variant="body-sm" color="secondary">Description</Text>
+              <Text variant="body-sm" color="secondary">
+                Description
+              </Text>
               <input
                 type="text"
                 name="description"
@@ -345,7 +361,9 @@ export function TripPlanning({
               />
             </div>
             <div>
-              <Text variant="body-sm" color="secondary">Due Date</Text>
+              <Text variant="body-sm" color="secondary">
+                Due Date
+              </Text>
               <input
                 type="date"
                 name="dueDate"
@@ -356,7 +374,9 @@ export function TripPlanning({
             </div>
             {dialogState.action === "edit" && (
               <div>
-                <Text variant="body-sm" color="secondary">Status</Text>
+                <Text variant="body-sm" color="secondary">
+                  Status
+                </Text>
                 <select
                   name="completed"
                   defaultValue={selectedDeadline?.completed ? "true" : "false"}
@@ -369,10 +389,7 @@ export function TripPlanning({
             )}
           </div>
           <div className="flex justify-end gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => updateDialogState(null, null)}
-            >
+            <Button variant="ghost" onClick={() => updateDialogState(null, null)}>
               Cancel
             </Button>
             <Button variant="primary" type="submit">

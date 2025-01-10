@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, RefObject } from 'react';
+import { RefObject, useCallback, useEffect, useState } from "react";
 
 interface Dimensions {
   width: number;
@@ -35,7 +35,7 @@ export function useChartDimensions(
     minHeight = 300,
     minWidth = 200,
     maxScale = 1.5,
-    minScale = 0.5
+    minScale = 0.5,
   } = settings;
 
   const [dimensions, setDimensions] = useState<Dimensions>({
@@ -47,7 +47,7 @@ export function useChartDimensions(
     marginRight,
     marginBottom,
     marginLeft,
-    scale: 1
+    scale: 1,
   });
 
   const updateDimensions = useCallback(() => {
@@ -61,12 +61,12 @@ export function useChartDimensions(
       const boundedWidth = width - marginLeft - marginRight;
       const boundedHeight = height - marginTop - marginBottom;
 
-      setDimensions(prev => ({
+      setDimensions((prev) => ({
         ...prev,
         width,
         height,
         boundedWidth,
-        boundedHeight
+        boundedHeight,
       }));
     }
   }, [marginTop, marginRight, marginBottom, marginLeft, minHeight, minWidth, ref]);
@@ -86,15 +86,18 @@ export function useChartDimensions(
     };
   }, [ref, updateDimensions]);
 
-  const updateScale = useCallback((newScale: number) => {
-    const clampedScale = Math.min(Math.max(minScale, newScale), maxScale);
-    setDimensions(prev => ({
-      ...prev,
-      scale: clampedScale,
-      boundedWidth: prev.width * clampedScale - marginLeft - marginRight,
-      boundedHeight: prev.height * clampedScale - marginTop - marginBottom
-    }));
-  }, [maxScale, minScale, marginLeft, marginRight, marginTop, marginBottom]);
+  const updateScale = useCallback(
+    (newScale: number) => {
+      const clampedScale = Math.min(Math.max(minScale, newScale), maxScale);
+      setDimensions((prev) => ({
+        ...prev,
+        scale: clampedScale,
+        boundedWidth: prev.width * clampedScale - marginLeft - marginRight,
+        boundedHeight: prev.height * clampedScale - marginTop - marginBottom,
+      }));
+    },
+    [maxScale, minScale, marginLeft, marginRight, marginTop, marginBottom]
+  );
 
   return [dimensions, updateScale];
 }

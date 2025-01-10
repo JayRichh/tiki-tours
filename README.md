@@ -15,6 +15,7 @@ A modern travel planning platform that helps you organize trips, manage timeline
 ## Technology
 
 Built with modern web technologies:
+
 - Next.js 14 (App Router)
 - TypeScript
 - Three.js + React Three Fiber

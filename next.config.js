@@ -3,20 +3,20 @@ const nextConfig = {
   transpilePackages: ["three", "@react-three/fiber", "@react-three/drei"],
   reactStrictMode: true,
   images: {
-    domains: ['logo.clearbit.com'],
+    domains: ["logo.clearbit.com"],
   },
   env: {
-    NEXT_PUBLIC_SITE_URL: 'https://tiki.tours',
+    NEXT_PUBLIC_SITE_URL: "https://tiki.tours",
   },
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: "/:path*",
         headers: [
           {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on'
-          }
+            key: "X-DNS-Prefetch-Control",
+            value: "on",
+          },
         ],
       },
     ];

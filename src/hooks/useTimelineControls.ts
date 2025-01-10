@@ -1,5 +1,6 @@
-import { useState, useCallback, useMemo } from 'react';
-import { Trip, Activity, KeyEvent } from '~/types/trips';
+import { useCallback, useMemo, useState } from "react";
+
+import { Activity, KeyEvent, Trip } from "~/types/trips";
 
 interface TimelineDay {
   date: string;
@@ -40,9 +41,9 @@ export function useTimelineControls(trip: Trip): TimelineControls {
   const [scale, setScale] = useState(1);
 
   // Color scale for activity density
-  const colorScale = ['#e5f6ff', '#93c5fd', '#60a5fa', '#3b82f6', '#2563eb'];
+  const colorScale = ["#e5f6ff", "#93c5fd", "#60a5fa", "#3b82f6", "#2563eb"];
   const getHighlightColor = useCallback((value: number) => {
-    if (value === 0) return '#f3f4f6';
+    if (value === 0) return "#f3f4f6";
     if (value <= 1) return colorScale[0];
     if (value <= 2) return colorScale[1];
     if (value <= 3) return colorScale[2];
@@ -58,19 +59,19 @@ export function useTimelineControls(trip: Trip): TimelineControls {
 
     // Initialize all days in range
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().split('T')[0];
+      const dateStr = d.toISOString().split("T")[0];
       dayMap.set(dateStr, {
         date: dateStr,
         value: 0,
         activities: [],
         events: [],
-        color: '#f3f4f6'
+        color: "#f3f4f6",
       });
     }
 
     // Add activities
-    trip.activities?.forEach(activity => {
-      const dateStr = activity.date.split('T')[0];
+    trip.activities?.forEach((activity) => {
+      const dateStr = activity.date.split("T")[0];
       const day = dayMap.get(dateStr);
       if (day) {
         day.activities.push(activity);
@@ -80,8 +81,8 @@ export function useTimelineControls(trip: Trip): TimelineControls {
     });
 
     // Add events
-    trip.keyEvents?.forEach(event => {
-      const dateStr = event.date.split('T')[0];
+    trip.keyEvents?.forEach((event) => {
+      const dateStr = event.date.split("T")[0];
       const day = dayMap.get(dateStr);
       if (day) {
         day.events.push(event);
@@ -94,65 +95,71 @@ export function useTimelineControls(trip: Trip): TimelineControls {
   }, [trip, getHighlightColor]);
 
   // Calendar configuration
-  const calendarConfig = useMemo(() => ({
-    from: trip.startDate.split('T')[0],
-    to: trip.endDate.split('T')[0],
-    emptyColor: '#f3f4f6',
-    colors: colorScale,
-    daySpacing: 3,
-    dayBorderWidth: 2,
-    monthSpacing: 40,
-    monthBorderColor: '#ffffff',
-    monthLegendOffset: 24,
-    yearSpacing: 60,
-    theme: {
-      labels: {
-        text: {
-          fontSize: 14,
-          fontWeight: 600,
-          fill: '#374151'
-        }
+  const calendarConfig = useMemo(
+    () => ({
+      from: trip.startDate.split("T")[0],
+      to: trip.endDate.split("T")[0],
+      emptyColor: "#f3f4f6",
+      colors: colorScale,
+      daySpacing: 3,
+      dayBorderWidth: 2,
+      monthSpacing: 40,
+      monthBorderColor: "#ffffff",
+      monthLegendOffset: 24,
+      yearSpacing: 60,
+      theme: {
+        labels: {
+          text: {
+            fontSize: 14,
+            fontWeight: 600,
+            fill: "#374151",
+          },
+        },
+        legends: {
+          text: {
+            fontSize: 13,
+            fontWeight: 500,
+            fill: "#374151",
+          },
+        },
+        tooltip: {
+          container: {
+            background: "#ffffff",
+            color: "#374151",
+            fontSize: "14px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            padding: "12px",
+          },
+        },
+        grid: {
+          line: {
+            stroke: "#e5e7eb",
+            strokeWidth: 1,
+          },
+        },
+        crosshair: {
+          line: {
+            stroke: "#60a5fa",
+            strokeWidth: 1,
+            strokeOpacity: 0.5,
+          },
+        },
       },
-      legends: {
-        text: {
-          fontSize: 13,
-          fontWeight: 500,
-          fill: '#374151'
-        }
-      },
-      tooltip: {
-        container: {
-          background: '#ffffff',
-          color: '#374151',
-          fontSize: '14px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          padding: '12px'
-        }
-      },
-      grid: {
-        line: {
-          stroke: '#e5e7eb',
-          strokeWidth: 1
-        }
-      },
-      crosshair: {
-        line: {
-          stroke: '#60a5fa',
-          strokeWidth: 1,
-          strokeOpacity: 0.5
-        }
-      }
-    }
-  }), [trip, colorScale]);
+    }),
+    [trip, colorScale]
+  );
 
-  const getDayActivities = useCallback((date: string) => {
-    const day = days.find(d => d.date === date);
-    return {
-      activities: day?.activities || [],
-      events: day?.events || []
-    };
-  }, [days]);
+  const getDayActivities = useCallback(
+    (date: string) => {
+      const day = days.find((d) => d.date === date);
+      return {
+        activities: day?.activities || [],
+        events: day?.events || [],
+      };
+    },
+    [days]
+  );
 
   return {
     currentMonth,
@@ -164,6 +171,6 @@ export function useTimelineControls(trip: Trip): TimelineControls {
     setYear,
     setScale,
     getHighlightColor,
-    getDayActivities
+    getDayActivities,
   };
 }

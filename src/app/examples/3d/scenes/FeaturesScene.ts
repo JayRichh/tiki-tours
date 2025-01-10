@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
@@ -37,12 +37,12 @@ export class FeaturesScene {
   private targetIntensity = 0;
 
   private readonly vehicleFiles = [
-    '/assets/ambulance.glb',
-    '/assets/firetruck.glb',
-    '/assets/sedan-sports.glb',
-    '/assets/taxi.glb',
-    '/assets/tractor.glb',
-    '/assets/truck.glb'
+    "/assets/ambulance.glb",
+    "/assets/firetruck.glb",
+    "/assets/sedan-sports.glb",
+    "/assets/taxi.glb",
+    "/assets/tractor.glb",
+    "/assets/truck.glb",
   ];
 
   constructor(container: HTMLElement) {
@@ -52,7 +52,7 @@ export class FeaturesScene {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
-      powerPreference: 'high-performance'
+      powerPreference: "high-performance",
     });
 
     // Setup mouse interaction
@@ -62,7 +62,7 @@ export class FeaturesScene {
     // Setup loaders
     this.loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
     this.loader.setDRACOLoader(dracoLoader);
 
     this.textureLoader = new THREE.TextureLoader();
@@ -77,7 +77,7 @@ export class FeaturesScene {
     try {
       this.colorMap = await new Promise((resolve, reject) => {
         this.textureLoader.load(
-          '/assets/Textures/colormap.png',
+          "/assets/Textures/colormap.png",
           (texture) => {
             texture.colorSpace = THREE.SRGBColorSpace;
             texture.flipY = false;
@@ -88,7 +88,7 @@ export class FeaturesScene {
         );
       });
     } catch (error) {
-      console.warn('Failed to load texture, using fallback:', error);
+      console.warn("Failed to load texture, using fallback:", error);
     }
   }
 
@@ -165,7 +165,7 @@ export class FeaturesScene {
       uniforms: {
         tDiffuse: { value: null },
         time: { value: 0 },
-        intensity: { value: 0 }
+        intensity: { value: 0 },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -186,14 +186,14 @@ export class FeaturesScene {
           float b = base.b + 0.02 * intensity * sin(time - vUv.y * 10.0);
           gl_FragColor = vec4(r, g, b, base.a);
         }
-      `
+      `,
     };
 
     const waveShader = {
       uniforms: {
         tDiffuse: { value: null },
         time: { value: 0 },
-        intensity: { value: 0 }
+        intensity: { value: 0 },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -214,12 +214,12 @@ export class FeaturesScene {
           col.rgb = mix(col.rgb, vec3(avg), wave);
           gl_FragColor = vec4(col.rgb, col.a);
         }
-      `
+      `,
     };
 
     this.customPass = new ShaderPass(rippleShader);
     this.customPass2 = new ShaderPass(waveShader);
-    
+
     this.composer.addPass(this.customPass);
     this.composer.addPass(this.customPass2);
   }
@@ -245,7 +245,7 @@ export class FeaturesScene {
               clearcoatRoughness: 0.2,
               envMapIntensity: 1.5,
               transparent: true,
-              opacity: 0.9 // Slightly transparent vehicles
+              opacity: 0.9, // Slightly transparent vehicles
             });
 
             // Apply texture if available
@@ -281,7 +281,7 @@ export class FeaturesScene {
           orbitSpeed: 0.1 + Math.random() * 0.2,
           rotationSpeed: 0.5 + Math.random() * 1.0,
           orbitOffset: Math.random() * Math.PI * 2,
-          mouseInfluence: new THREE.Vector3()
+          mouseInfluence: new THREE.Vector3(),
         };
 
         this.vehicles.push(vehicle);
@@ -305,8 +305,8 @@ export class FeaturesScene {
       this.targetIntensity = this.targetIntensity === 0 ? 1 : 0;
     };
 
-    this.container.addEventListener('mousemove', onMouseMove);
-    this.container.addEventListener('contextmenu', onContextMenu);
+    this.container.addEventListener("mousemove", onMouseMove);
+    this.container.addEventListener("contextmenu", onContextMenu);
   }
 
   private handleResize = (): void => {
@@ -349,16 +349,19 @@ export class FeaturesScene {
       const angle = this.time * vehicle.orbitSpeed + vehicle.orbitOffset;
       const targetX = Math.cos(angle) * vehicle.orbitRadius;
       const targetZ = Math.sin(angle) * vehicle.orbitRadius;
-      
+
       // LERP for smoother position updates
       const lerpFactor = 0.02; // Reduced for smoother motion
-      vehicle.model.position.x += (targetX + vehicle.mouseInfluence.x - vehicle.model.position.x) * lerpFactor;
-      
+      vehicle.model.position.x +=
+        (targetX + vehicle.mouseInfluence.x - vehicle.model.position.x) * lerpFactor;
+
       // Reduced vertical motion amplitude and smoother transitions
       const verticalOffset = Math.sin(this.time * 0.3 + vehicle.orbitOffset) * 0.5; // Reduced amplitude and frequency
-      vehicle.model.position.y += (1 + verticalOffset + vehicle.mouseInfluence.y - vehicle.model.position.y) * lerpFactor;
-      
-      vehicle.model.position.z += (targetZ + vehicle.mouseInfluence.z - vehicle.model.position.z) * lerpFactor;
+      vehicle.model.position.y +=
+        (1 + verticalOffset + vehicle.mouseInfluence.y - vehicle.model.position.y) * lerpFactor;
+
+      vehicle.model.position.z +=
+        (targetZ + vehicle.mouseInfluence.z - vehicle.model.position.z) * lerpFactor;
 
       // Smooth rotation with LERP
       const targetRotation = Math.atan2(
@@ -369,8 +372,12 @@ export class FeaturesScene {
       vehicle.model.rotation.y += (targetRotation + Math.PI / 2 - currentRotation) * lerpFactor * 2;
 
       // Gentler floating rotation
-      vehicle.model.rotation.x += (Math.sin(this.time * 0.2 + vehicle.orbitOffset) * 0.05 - vehicle.model.rotation.x) * lerpFactor;
-      vehicle.model.rotation.z += (Math.cos(this.time * 0.15 + vehicle.orbitOffset) * 0.05 - vehicle.model.rotation.z) * lerpFactor;
+      vehicle.model.rotation.x +=
+        (Math.sin(this.time * 0.2 + vehicle.orbitOffset) * 0.05 - vehicle.model.rotation.x) *
+        lerpFactor;
+      vehicle.model.rotation.z +=
+        (Math.cos(this.time * 0.15 + vehicle.orbitOffset) * 0.05 - vehicle.model.rotation.z) *
+        lerpFactor;
 
       // Mouse interaction
       const intersects = this.raycaster.intersectObject(vehicle.model, true);
@@ -385,7 +392,7 @@ export class FeaturesScene {
     });
 
     this.controls.update();
-    
+
     if (this.composer) {
       this.composer.render();
     } else {
@@ -398,7 +405,7 @@ export class FeaturesScene {
     const targetX = Math.sin(progress * Math.PI * 2) * 15;
     const targetZ = Math.cos(progress * Math.PI * 2) * 15;
     const targetY = 5 + Math.sin(progress * Math.PI) * 3;
-    
+
     this.camera.position.x += (targetX - this.camera.position.x) * 0.05;
     this.camera.position.y += (targetY - this.camera.position.y) * 0.05;
     this.camera.position.z += (targetZ - this.camera.position.z) * 0.05;
@@ -427,7 +434,7 @@ export class FeaturesScene {
           if (child.geometry) child.geometry.dispose();
           if (child.material) {
             if (Array.isArray(child.material)) {
-              child.material.forEach(material => material.dispose());
+              child.material.forEach((material) => material.dispose());
             } else {
               child.material.dispose();
             }

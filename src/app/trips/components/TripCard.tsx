@@ -1,13 +1,17 @@
 "use client";
 
+import { DollarSign, Edit2, Trash2, Users } from "lucide-react";
+
 import Link from "next/link";
-import { Card, CardContent, CardHeader } from "~/components/ui/Card";
+
 import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { Progress } from "~/components/ui/Progress";
 import { Text } from "~/components/ui/Text";
+
 import { Trip } from "~/types/trips";
-import { DollarSign, Users, Edit2, Trash2 } from "lucide-react";
+
 import { statusColors } from "../constants";
 
 interface TripCardProps {
@@ -71,8 +75,8 @@ export function TripCard({ trip, onEdit, onDelete }: TripCardProps) {
                     ${trip.tripBudget.toLocaleString()}
                   </Text>
                 </div>
-              ) : trip.relocationPlan && (
-                <Badge variant="secondary">Relocation</Badge>
+              ) : (
+                trip.relocationPlan && <Badge variant="secondary">Relocation</Badge>
               )}
               {trip.numberOfTravelers && (
                 <div className="flex items-center gap-2">

@@ -1,12 +1,17 @@
 "use client";
 
-import { useRef } from "react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { CalendarDatum, CalendarDayData } from "@nivo/calendar";
+
+import { useRef } from "react";
+
 import { Text } from "~/components/ui/Text";
+
 import { useChartDimensions } from "~/hooks/useChartDimensions";
 import { useTimelineControls } from "~/hooks/useTimelineControls";
+
 import { Trip } from "~/types/trips";
+
 import { TimelineToolbar } from "./TimelineToolbar";
 
 interface ActivityCalendarProps {
@@ -27,18 +32,11 @@ export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
     marginLeft: 60,
     minHeight: 500,
     maxScale: 1.5,
-    minScale: 0.5
+    minScale: 0.5,
   });
 
-  const {
-    currentMonth,
-    currentYear,
-    days,
-    calendarConfig,
-    setMonth,
-    setYear,
-    setScale
-  } = useTimelineControls(trip);
+  const { currentMonth, currentYear, days, calendarConfig, setMonth, setYear, setScale } =
+    useTimelineControls(trip);
 
   const handleZoomIn = () => {
     const newScale = Math.min(1.5, dimensions.scale + 0.1);
@@ -96,32 +94,31 @@ export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
         className="mb-4"
       />
 
-      <div 
+      <div
         ref={containerRef}
         className="relative bg-background/50 rounded-lg p-8 overflow-hidden"
         style={{ height: dimensions.height }}
       >
-        <div 
+        <div
           className="w-full h-full origin-top-left"
-          style={{ 
+          style={{
             transform: `scale(${dimensions.scale})`,
             width: `${100 / dimensions.scale}%`,
-            height: `${100 / dimensions.scale}%`
+            height: `${100 / dimensions.scale}%`,
           }}
           key={dimensions.scale}
         >
           <ResponsiveCalendar
             data={days
-              .filter(day => {
+              .filter((day) => {
                 const date = new Date(day.date);
                 return date.getFullYear() === currentYear;
               })
-              .map(day => ({
+              .map((day) => ({
                 day: day.date,
                 value: day.value,
-                color: day.color
-              }))
-            }
+                color: day.color,
+              }))}
             from={`${currentYear}-01-01`}
             to={`${currentYear}-12-31`}
             emptyColor="#f3f4f6"
@@ -130,7 +127,7 @@ export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
               top: dimensions.marginTop,
               right: dimensions.marginRight,
               bottom: dimensions.marginBottom,
-              left: dimensions.marginLeft
+              left: dimensions.marginLeft,
             }}
             yearSpacing={40}
             monthBorderColor="#ffffff"
@@ -147,15 +144,15 @@ export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
                 text: {
                   fontSize: 14,
                   fontWeight: 600,
-                  fill: "#374151"
-                }
+                  fill: "#374151",
+                },
               },
               legends: {
                 text: {
                   fontSize: 13,
                   fontWeight: 500,
-                  fill: "#374151"
-                }
+                  fill: "#374151",
+                },
               },
               tooltip: {
                 container: {
@@ -164,9 +161,9 @@ export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
                   fontSize: "14px",
                   borderRadius: "8px",
                   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                  padding: "12px"
-                }
-              }
+                  padding: "12px",
+                },
+              },
             }}
             legends={[
               {
@@ -183,11 +180,11 @@ export function ActivityCalendar({ trip, onDayClick }: ActivityCalendarProps) {
                   {
                     on: "hover",
                     style: {
-                      itemTextColor: "#000"
-                    }
-                  }
-                ]
-              }
+                      itemTextColor: "#000",
+                    },
+                  },
+                ],
+              },
             ]}
           />
         </div>

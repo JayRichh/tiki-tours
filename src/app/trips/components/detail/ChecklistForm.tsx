@@ -1,9 +1,10 @@
 "use client";
 
-import { useForm } from "~/hooks/useForm";
 import { Button } from "~/components/ui/Button";
-import { Text } from "~/components/ui/Text";
 import { Select } from "~/components/ui/Select";
+import { Text } from "~/components/ui/Text";
+
+import { useForm } from "~/hooks/useForm";
 
 interface ChecklistFormProps {
   onSubmit: (data: ChecklistFormData) => Promise<void>;
@@ -15,7 +16,7 @@ export interface ChecklistFormData {
   title: string;
   category?: string;
   dueDate?: string;
-  priority?: 'low' | 'medium' | 'high';
+  priority?: "low" | "medium" | "high";
   notes?: string;
 }
 
@@ -35,18 +36,23 @@ const categoryOptions = [
 ];
 
 export function ChecklistForm({ onSubmit, onCancel, isItem = false }: ChecklistFormProps) {
-  const form = useForm<ChecklistFormData>({
-    title: "",
-    category: "",
-    dueDate: "",
-    priority: undefined,
-    notes: "",
-  }, onSubmit);
+  const form = useForm<ChecklistFormData>(
+    {
+      title: "",
+      category: "",
+      dueDate: "",
+      priority: undefined,
+      notes: "",
+    },
+    onSubmit
+  );
 
   return (
     <form onSubmit={form.handleSubmit} className="space-y-4">
       <div>
-        <Text variant="body-sm" color="secondary">Title</Text>
+        <Text variant="body-sm" color="secondary">
+          Title
+        </Text>
         <input
           type="text"
           value={form.values.title}
@@ -58,7 +64,9 @@ export function ChecklistForm({ onSubmit, onCancel, isItem = false }: ChecklistF
 
       {!isItem && (
         <div>
-          <Text variant="body-sm" color="secondary">Category</Text>
+          <Text variant="body-sm" color="secondary">
+            Category
+          </Text>
           <Select
             options={categoryOptions}
             value={form.values.category}
@@ -69,7 +77,9 @@ export function ChecklistForm({ onSubmit, onCancel, isItem = false }: ChecklistF
       )}
 
       <div>
-        <Text variant="body-sm" color="secondary">Due Date</Text>
+        <Text variant="body-sm" color="secondary">
+          Due Date
+        </Text>
         <input
           type="date"
           value={form.values.dueDate}
@@ -81,7 +91,9 @@ export function ChecklistForm({ onSubmit, onCancel, isItem = false }: ChecklistF
       {isItem && (
         <>
           <div>
-            <Text variant="body-sm" color="secondary">Priority</Text>
+            <Text variant="body-sm" color="secondary">
+              Priority
+            </Text>
             <Select
               options={priorityOptions}
               value={form.values.priority}
@@ -91,7 +103,9 @@ export function ChecklistForm({ onSubmit, onCancel, isItem = false }: ChecklistF
           </div>
 
           <div>
-            <Text variant="body-sm" color="secondary">Notes</Text>
+            <Text variant="body-sm" color="secondary">
+              Notes
+            </Text>
             <textarea
               value={form.values.notes}
               onChange={(e) => form.handleChange("notes", e.target.value)}

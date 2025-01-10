@@ -16,7 +16,15 @@ export default function TripDetailLoading() {
           {/* Tab Navigation */}
           <div className="border-b border-border/50">
             <div className="flex gap-2 mb-[-1px]">
-              {["Overview", "Dashboard", "Timeline & Budget", "Activities", "Planning", "Checklists", "Reports"].map((tab) => (
+              {[
+                "Overview",
+                "Dashboard",
+                "Timeline & Budget",
+                "Activities",
+                "Planning",
+                "Checklists",
+                "Reports",
+              ].map((tab) => (
                 <Skeleton key={tab} className="h-10 w-28" />
               ))}
             </div>

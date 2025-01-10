@@ -1,12 +1,15 @@
 "use client";
 
+import { AlertCircle, Calendar, CheckCircle, Clock, DollarSign } from "lucide-react";
+
 import { useMemo } from "react";
-import { Trip, Activity, Deadline, ChecklistItem } from "~/types/trips";
-import { Card, CardHeader, CardContent } from "~/components/ui/Card";
-import { Text } from "~/components/ui/Text";
+
 import { Badge } from "~/components/ui/Badge";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { Progress } from "~/components/ui/Progress";
-import { AlertCircle, Clock, Calendar, DollarSign, CheckCircle } from "lucide-react";
+import { Text } from "~/components/ui/Text";
+
+import { Activity, ChecklistItem, Deadline, Trip } from "~/types/trips";
 
 interface TripDashboardProps {
   trip: Trip;
@@ -27,7 +30,7 @@ export function TripDashboard({ trip }: TripDashboardProps) {
     const now = new Date();
 
     // Check deadlines
-    trip.deadlines?.forEach(deadline => {
+    trip.deadlines?.forEach((deadline) => {
       const dueDate = new Date(deadline.dueDate);
       if (!deadline.completed) {
         if (dueDate < now) {
@@ -36,7 +39,7 @@ export function TripDashboard({ trip }: TripDashboardProps) {
             item: deadline,
             itemType: "deadline",
             dueDate: deadline.dueDate,
-            title: deadline.description
+            title: deadline.description,
           });
         } else if (dueDate.getTime() - now.getTime() <= 3 * 24 * 60 * 60 * 1000) {
           result.push({
@@ -44,14 +47,14 @@ export function TripDashboard({ trip }: TripDashboardProps) {
             item: deadline,
             itemType: "deadline",
             dueDate: deadline.dueDate,
-            title: deadline.description
+            title: deadline.description,
           });
         }
       }
     });
 
     // Check activities
-    trip.activities?.forEach(activity => {
+    trip.activities?.forEach((activity) => {
       const activityDate = new Date(activity.date);
       if (activity.bookingStatus === "planned") {
         if (activityDate < now) {
@@ -60,7 +63,7 @@ export function TripDashboard({ trip }: TripDashboardProps) {
             item: activity,
             itemType: "activity",
             dueDate: activity.date,
-            title: activity.activityName
+            title: activity.activityName,
           });
         } else if (activityDate.getTime() - now.getTime() <= 3 * 24 * 60 * 60 * 1000) {
           result.push({
@@ -68,15 +71,15 @@ export function TripDashboard({ trip }: TripDashboardProps) {
             item: activity,
             itemType: "activity",
             dueDate: activity.date,
-            title: activity.activityName
+            title: activity.activityName,
           });
         }
       }
     });
 
     // Check checklist items
-    trip.checklists?.forEach(checklist => {
-      checklist.items.forEach(item => {
+    trip.checklists?.forEach((checklist) => {
+      checklist.items.forEach((item) => {
         if (!item.completed && item.dueDate) {
           const dueDate = new Date(item.dueDate);
           if (dueDate < now) {
@@ -85,7 +88,7 @@ export function TripDashboard({ trip }: TripDashboardProps) {
               item,
               itemType: "checklist",
               dueDate: item.dueDate,
-              title: item.title
+              title: item.title,
             });
           } else if (dueDate.getTime() - now.getTime() <= 3 * 24 * 60 * 60 * 1000) {
             result.push({
@@ -93,7 +96,7 @@ export function TripDashboard({ trip }: TripDashboardProps) {
               item,
               itemType: "checklist",
               dueDate: item.dueDate,
-              title: item.title
+              title: item.title,
             });
           }
         }
@@ -106,20 +109,26 @@ export function TripDashboard({ trip }: TripDashboardProps) {
   // Calculate completion stats
   const stats = useMemo(() => {
     const totalActivities = trip.activities?.length || 0;
-    const bookedActivities = trip.activities?.filter(a => a.bookingStatus === "booked").length || 0;
-    const completedActivities = trip.activities?.filter(a => a.bookingStatus === "completed").length || 0;
+    const bookedActivities =
+      trip.activities?.filter((a) => a.bookingStatus === "booked").length || 0;
+    const completedActivities =
+      trip.activities?.filter((a) => a.bookingStatus === "completed").length || 0;
 
-    const totalChecklistItems = trip.checklists?.reduce((sum, list) => sum + list.items.length, 0) || 0;
-    const completedChecklistItems = trip.checklists?.reduce(
-      (sum, list) => sum + list.items.filter(item => item.completed).length,
-      0
-    ) || 0;
+    const totalChecklistItems =
+      trip.checklists?.reduce((sum, list) => sum + list.items.length, 0) || 0;
+    const completedChecklistItems =
+      trip.checklists?.reduce(
+        (sum, list) => sum + list.items.filter((item) => item.completed).length,
+        0
+      ) || 0;
 
     return {
       activitiesProgress: totalActivities ? (bookedActivities / totalActivities) * 100 : 0,
       activitiesCompletion: totalActivities ? (completedActivities / totalActivities) * 100 : 0,
-      checklistProgress: totalChecklistItems ? (completedChecklistItems / totalChecklistItems) * 100 : 0,
-      budgetProgress: trip.tripBudget ? ((trip.spentSoFar || 0) / trip.tripBudget) * 100 : 0
+      checklistProgress: totalChecklistItems
+        ? (completedChecklistItems / totalChecklistItems) * 100
+        : 0,
+      budgetProgress: trip.tripBudget ? ((trip.spentSoFar || 0) / trip.tripBudget) * 100 : 0,
     };
   }, [trip]);
 
@@ -133,7 +142,9 @@ export function TripDashboard({ trip }: TripDashboardProps) {
               <div className="flex items-center gap-4">
                 <Calendar className="h-8 w-8 text-primary" />
                 <div>
-                  <Text variant="body-sm" color="secondary">Trip Duration</Text>
+                  <Text variant="body-sm" color="secondary">
+                    Trip Duration
+                  </Text>
                   <Text variant="h4">
                     {Math.ceil(
                       (new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) /
@@ -151,7 +162,9 @@ export function TripDashboard({ trip }: TripDashboardProps) {
               <div className="flex items-center gap-4">
                 <DollarSign className="h-8 w-8 text-primary" />
                 <div className="flex-1">
-                  <Text variant="body-sm" color="secondary">Budget Spent</Text>
+                  <Text variant="body-sm" color="secondary">
+                    Budget Spent
+                  </Text>
                   <Text variant="h4">${trip.spentSoFar || 0}</Text>
                   <Progress value={stats.budgetProgress} className="mt-2" />
                 </div>
@@ -164,7 +177,9 @@ export function TripDashboard({ trip }: TripDashboardProps) {
               <div className="flex items-center gap-4">
                 <CheckCircle className="h-8 w-8 text-primary" />
                 <div className="flex-1">
-                  <Text variant="body-sm" color="secondary">Activities Booked</Text>
+                  <Text variant="body-sm" color="secondary">
+                    Activities Booked
+                  </Text>
                   <Progress value={stats.activitiesProgress} className="mt-2" />
                 </div>
               </div>
@@ -176,7 +191,9 @@ export function TripDashboard({ trip }: TripDashboardProps) {
               <div className="flex items-center gap-4">
                 <CheckCircle className="h-8 w-8 text-primary" />
                 <div className="flex-1">
-                  <Text variant="body-sm" color="secondary">Checklist Progress</Text>
+                  <Text variant="body-sm" color="secondary">
+                    Checklist Progress
+                  </Text>
                   <Progress value={stats.checklistProgress} className="mt-2" />
                 </div>
               </div>
@@ -191,10 +208,7 @@ export function TripDashboard({ trip }: TripDashboardProps) {
             <CardContent>
               <div className="space-y-3">
                 {warnings.map((warning, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-3 p-2 rounded bg-background/50"
-                  >
+                  <div key={index} className="flex items-start gap-3 p-2 rounded bg-background/50">
                     {warning.type === "overdue" ? (
                       <AlertCircle className="h-5 w-5 text-red-500 mt-1" />
                     ) : (
@@ -209,9 +223,7 @@ export function TripDashboard({ trip }: TripDashboardProps) {
                         >
                           {warning.type}
                         </Badge>
-                        <Badge variant="secondary">
-                          {warning.itemType}
-                        </Badge>
+                        <Badge variant="secondary">{warning.itemType}</Badge>
                       </div>
                       <Text variant="body-sm" color="secondary">
                         Due: {new Date(warning.dueDate).toLocaleDateString()}
