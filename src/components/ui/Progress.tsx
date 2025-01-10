@@ -12,7 +12,7 @@ interface ProgressProps {
   size?: "sm" | "md" | "lg";
   showValue?: boolean;
   animate?: boolean;
-  variant?: "default" | "gradient" | "striped";
+  variant?: "default" | "gradient" | "striped" | "orange";
   className?: string;
 }
 
@@ -26,6 +26,7 @@ const variants = {
   default: "bg-blue-500",
   gradient: "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500",
   striped: "progress-striped bg-blue-500",
+  orange: "bg-[hsl(35,85%,45%)]"
 };
 
 export function Progress({

@@ -7,6 +7,7 @@ import localFont from "next/font/local";
 
 import { Footer } from "~/components/Footer";
 import { Navigation } from "~/components/Navigation";
+import { ScrollProgress } from "~/components/ScrollProgress";
 import { GradientBackground } from "~/components/ui/GradientBackground";
 import { Spinner } from "~/components/ui/Spinner";
 
@@ -117,6 +118,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Navigation */}
         <Suspense fallback={<NavigationLoading />}>
           <Navigation />
+          <ScrollProgress />
         </Suspense>
 
         {/* Main content */}
