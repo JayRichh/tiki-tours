@@ -2,7 +2,6 @@ import { Analytics } from "@vercel/analytics/react";
 
 import { Suspense } from "react";
 
-import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import { Footer } from "~/components/Footer";
@@ -11,8 +10,9 @@ import { ScrollProgress } from "~/components/ScrollProgress";
 import { GradientBackground } from "~/components/ui/GradientBackground";
 import { Spinner } from "~/components/ui/Spinner";
 
-import { FeaturesSceneComponent } from "./examples/3d/components/FeaturesSceneComponent";
 import "./globals.css";
+
+import { metadata } from "./metadata";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,60 +27,6 @@ const geistMono = localFont({
   preload: true,
   display: "swap",
 });
-
-export const metadata: Metadata = {
-  metadataBase: new URL("https://tiki.tours"),
-  title: "Tiki Tours - Travel Planning Made Easy",
-  icons: {
-    icon: [{ url: "/koru-icon.svg", type: "image/svg+xml" }, { url: "/favicon.ico" }],
-    apple: [{ url: "/koru-icon.svg", type: "image/svg+xml" }],
-    shortcut: ["/koru-icon.svg"],
-  },
-  description:
-    "Plan your trips, relocations, and adventures with ease. Track budgets, manage timelines, and organize your journey.",
-  keywords: [
-    "travel planning",
-    "trip organization",
-    "vacation planner",
-    "travel itinerary",
-    "budget tracking",
-  ],
-  authors: [{ name: "Tiki Tours" }],
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://tiki.tours",
-    siteName: "Tiki Tours",
-    title: "Tiki Tours - Travel Planning Made Easy",
-    description:
-      "Plan your trips, relocations, and adventures with ease. Track budgets, manage timelines, and organize your journey.",
-    images: [
-      {
-        url: "/tikitoursbanner.png",
-        width: 1200,
-        height: 630,
-        alt: "Tiki Tours Banner",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Tiki Tours - Travel Planning Made Easy",
-    description: "Plan your trips, relocations, and adventures with ease.",
-    images: ["/tikitoursbanner.png"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
-  verification: {
-    google: "google-site-verification",
-  },
-};
 
 function NavigationLoading() {
   return (
@@ -97,6 +43,8 @@ function MainContentLoading() {
     </div>
   );
 }
+
+export { metadata };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
