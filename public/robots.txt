@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-Allow: /about
-Allow: /trips
-Disallow: /api/
-Disallow: /_next/
-Disallow: /static/
-
-Sitemap: https://tiki.tours/sitemap.xml

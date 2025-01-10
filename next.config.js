@@ -8,23 +8,6 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_SITE_URL: 'https://tiki.tours',
   },
-  headers: async () => {
-    return [
-      {
-        source: '/sitemap.xml',
-        headers: [
-          {
-            key: 'Content-Type',
-            value: 'application/xml',
-          },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=3600',
-          },
-        ],
-      },
-    ];
-  },
   async headers() {
     return [
       {
