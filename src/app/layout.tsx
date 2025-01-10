@@ -112,8 +112,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <GradientBackground />
         </div>
 
-        {/* 3D Scene Background */}
-        <FeaturesSceneComponent />
+        {/* 3D Scene Background
+        <FeaturesSceneComponent /> */}
 
         {/* Navigation */}
         <Suspense fallback={<NavigationLoading />}>
