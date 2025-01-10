@@ -27,6 +27,11 @@ export default function AboutPage() {
             <Text variant="body-lg" className="text-foreground/80 max-w-2xl mx-auto text-lg sm:text-xl">
               A comprehensive toolkit for organizing trips, managing budgets, and tracking travel plans.
             </Text>
+            <div className="mt-6 max-w-2xl mx-auto px-6 py-4 rounded-2xl bg-[hsl(28,85%,35%)]/5 backdrop-blur-sm border border-[hsl(28,85%,35%)]/10">
+              <Text className="text-lg text-foreground/70 italic">
+                "Tiki tour" (noun) - A New Zealand term for an extensive tour that visits the attractions or points of interest in an area. Originating from Māori culture, it embodies the spirit of exploration and discovery.
+              </Text>
+            </div>
           </motion.div>
         </Container>
       </section>
@@ -147,10 +152,10 @@ export default function AboutPage() {
                 <Link href="/trips">
                   <Button 
                     size="lg" 
-                    className="group bg-gradient-to-r from-[hsl(28,85%,35%)] to-[hsl(35,85%,45%)] hover:opacity-90 transition-all duration-300"
+                    className="px-10 py-5 text-lg font-medium bg-[#B0703C] text-primary-foreground hover:bg-[#B0703C]/90 rounded-full"
                   >
                     Create Trip
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <span className="ml-2 text-[22px] leading-none relative top-[1px]">↗</span>
                   </Button>
                 </Link>
               </Card>
