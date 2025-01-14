@@ -41,14 +41,6 @@
     {
       "source": "/home",
       "destination": "/"
-    },
-    {
-      "source": "/about",
-      "destination": "/about"
-    },
-    {
-      "source": "/trips",
-      "destination": "/trips"
     }
   ]
 }
